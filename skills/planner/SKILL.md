@@ -67,11 +67,9 @@ Spawn research skills in parallel:
 - Include exact verification commands with expected output
 - Write plan to Claude Code's plan file (the one specified by plan mode)
 
-### Phase 5: Exit Plan Mode
+### Phase 5: Exit Plan Mode and Execute
 - Use `ExitPlanMode` tool to get user approval and exit plan mode
-
-### Phase 6: Copy Plan and Execute
-- After exiting plan mode, copy the plan file to `thoughts/shared/plans/YYYY-MM-DD-{topic}.md`
+- A hook automatically copies the plan to `thoughts/shared/plans/`
 - Invoke `/execute` to begin implementation
 - DO NOT implement directly - the executor handles parallel batching and review cycles
 
