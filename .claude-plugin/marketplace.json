@@ -1,18 +1,18 @@
 {
-  "name": "claudeledger",
-  "version": "1.0.0",
-  "description": "Structured Brainstorm → Plan → Implement workflow with session continuity",
-  "author": {
-    "name": "StevenBock",
-    "url": "https://github.com/StevenBock"
-  },
-  "repository": "https://github.com/StevenBock/claudeledger",
-  "homepage": "https://github.com/StevenBock/claudeledger#readme",
-  "license": "MIT",
-  "keywords": ["workflow", "planning", "continuity", "brainstorm", "implementation"],
-  "install": {
-    "type": "git",
-    "url": "https://github.com/StevenBock/claudeledger.git"
-  },
-  "postInstall": ["npm install", "npm run build"]
+  "owner": "StevenBock",
+  "plugins": [
+    {
+      "name": "claudeledger",
+      "version": "1.0.0",
+      "description": "Structured Brainstorm → Plan → Implement workflow with session continuity",
+      "repository": "https://github.com/StevenBock/claudeledger",
+      "license": "MIT",
+      "keywords": ["workflow", "planning", "continuity", "brainstorm", "implementation"],
+      "install": {
+        "type": "git",
+        "url": "https://github.com/StevenBock/claudeledger.git"
+      },
+      "postInstall": ["npm install", "npm run build"]
+    }
+  ]
 }
