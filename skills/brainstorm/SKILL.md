@@ -16,9 +16,10 @@ This is DESIGN ONLY. The planner skill handles detailed implementation plans.
 
 ## Critical Rules
 
-1. **Ask one question at a time** - Wait for response before continuing
-2. **NO CODE** - Never write code examples, stay at design level
-3. **Spawn research in parallel** - Use Task tool with codebase-locator, codebase-analyzer, pattern-finder
+1. **Use AskUserQuestion tool** - Present options with clear trade-offs, let user choose direction
+2. **Ask one question at a time** - Wait for response before continuing
+3. **NO CODE** - Never write code examples, stay at design level
+4. **Spawn research in parallel** - Use Task tool with codebase-locator, codebase-analyzer, pattern-finder
 
 ## Research Subagents
 
@@ -36,28 +37,53 @@ In a SINGLE message, spawn:
 - Task: "codebase-analyzer: Analyze existing [feature]"
 - Task: "pattern-finder: Find patterns for [similar functionality]"
 
+## Using AskUserQuestion
+
+Use the `AskUserQuestion` tool to gather structured input:
+
+```
+AskUserQuestion(questions: [
+  {
+    question: "Which approach should we use for authentication?",
+    header: "Auth method",
+    options: [
+      { label: "JWT tokens (Recommended)", description: "Stateless, scalable, good for APIs" },
+      { label: "Session cookies", description: "Simpler, better for traditional web apps" },
+      { label: "OAuth only", description: "Delegate to external providers" }
+    ],
+    multiSelect: false
+  }
+])
+```
+
+**When to use:**
+- Choosing between approaches (always lead with recommended option)
+- Clarifying requirements or constraints
+- Validating assumptions before proceeding
+- Getting sign-off on design sections
+
 ## Process
 
 ### Phase 1: Understanding
 - Spawn research skills in parallel to gather context
-- Ask focused questions about purpose, constraints, success criteria
+- Use `AskUserQuestion` to clarify purpose, constraints, success criteria
 - One question at a time, wait for answer
 
 ### Phase 2: Exploring
 - Propose 2-3 different approaches with trade-offs
-- Lead with your recommendation and explain WHY
-- Include effort estimate, risks, dependencies
-- Wait for feedback before proceeding
+- Use `AskUserQuestion` to let user choose approach (recommend one)
+- Include risks and dependencies in option descriptions
+- Wait for selection before proceeding
 
 ### Phase 3: Presenting
 - Break design into sections of 200-300 words
-- Ask after EACH section: "Does this look right so far?"
+- Use `AskUserQuestion` after EACH section to validate
 - Cover: Architecture, Components, Data Flow, Error Handling, Testing
 - Don't proceed to next section until current one is validated
 
 ### Phase 4: Finalizing
 - Write validated design to `thoughts/shared/designs/YYYY-MM-DD-{topic}-design.md`
-- Ask: "Ready for the planner to create a detailed implementation plan?"
+- Use `AskUserQuestion`: "Ready for the planner to create implementation plan?"
 
 ## Output Format
 
