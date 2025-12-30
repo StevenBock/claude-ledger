@@ -1,4 +1,4 @@
-# micode for Claude Code
+# claudeledger
 
 Structured **Brainstorm → Plan → Implement** workflow with session continuity.
 
@@ -7,14 +7,14 @@ Structured **Brainstorm → Plan → Implement** workflow with session continuit
 ### From Marketplace
 
 ```bash
-claude plugin install micode
+claude plugin install claudeledger
 ```
 
 ### From Source
 
 ```bash
-git clone https://github.com/vtemian/micode.git ~/.claude/plugins/micode-claude
-cd ~/.claude/plugins/micode-claude
+git clone https://github.com/StevenBock/claudeledger.git ~/.claude/plugins/claudeledger
+cd ~/.claude/plugins/claudeledger
 npm install
 npm run build
 ```
@@ -23,7 +23,7 @@ Then add to your settings:
 
 ```json
 {
-  "plugins": ["~/.claude/plugins/micode-claude"]
+  "plugins": ["~/.claude/plugins/claudeledger"]
 }
 ```
 
@@ -139,7 +139,7 @@ Database stored at: `~/.config/claude-code/artifact-index/context.db`
 ## Structure
 
 ```
-micode-claude/
+claudeledger/
 ├── .claude-plugin/
 │   └── plugin.json         # Plugin manifest
 ├── .mcp.json               # MCP server config
@@ -193,7 +193,7 @@ npm run typecheck  # Type check
 
 ## Credits
 
-Ported from [micode](https://github.com/vtemian/micode) OpenCode plugin.
+Based on [micode](https://github.com/vtemian/micode) OpenCode plugin.
 
 Built on techniques from:
 - [HumanLayer ACE-FCA](https://github.com/humanlayer/12-factor-agents) - Research → Plan → Implement methodology

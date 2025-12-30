@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-micode-claude is a Claude Code plugin providing a structured **Brainstorm → Plan → Implement** workflow with session continuity. It includes skills, commands, hooks, and an MCP server for artifact indexing.
+claudeledger is a Claude Code plugin providing a structured **Brainstorm → Plan → Implement** workflow with session continuity. It includes skills, commands, hooks, and an MCP server for artifact indexing.
 
 ## Build Commands
 

@@ -1,5 +1,5 @@
 {
-  "description": "micode hooks for session continuity and workflow automation",
+  "description": "claudeledger hooks for session continuity and workflow automation",
   "hooks": {
     "SessionStart": [
       {

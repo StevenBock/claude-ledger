@@ -1,5 +1,5 @@
 {
-  "name": "@micode/artifact-index-mcp",
+  "name": "@claudeledger/artifact-index-mcp",
   "version": "1.0.0",
   "description": "MCP server for artifact indexing and search",
   "type": "module",

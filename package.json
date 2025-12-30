@@ -1,5 +1,5 @@
 {
-  "name": "micode-claude",
+  "name": "claudeledger",
   "version": "1.0.0",
   "description": "Claude Code plugin with Brainstorm → Plan → Implement workflow and session continuity",
   "type": "module",
@@ -13,7 +13,7 @@
     "server:artifact-index": "node servers/artifact-index/dist/server.mjs"
   },
   "bin": {
-    "micode-artifact-index": "./servers/artifact-index/run-server.sh"
+    "claudeledger-artifact-index": "./servers/artifact-index/run-server.sh"
   },
   "keywords": [
     "claude-code",
@@ -28,7 +28,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vtemian/micode.git"
+    "url": "git+https://github.com/StevenBock/claudeledger.git"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
