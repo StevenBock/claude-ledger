@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, mkdirSync, copyFileSync, readdirSync, statSync } from "fs";
+import { existsSync, mkdirSync, copyFileSync, readdirSync, statSync, readFileSync } from "fs";
 import { join, basename } from "path";
 import { homedir } from "os";
 
@@ -39,11 +39,54 @@ if (!existsSync(targetDir)) {
   mkdirSync(targetDir, { recursive: true });
 }
 
+// Extract title from plan content
+function extractTitle(content: string): string | null {
+  // Try first # heading
+  const headingMatch = content.match(/^#\s+(.+)$/m);
+  if (headingMatch) {
+    return headingMatch[1].replace(/^Plan:\s*/i, "").trim();
+  }
+  // Try **Goal:** line
+  const goalMatch = content.match(/\*\*Goal:\*\*\s*(.+)$/m);
+  if (goalMatch) {
+    return goalMatch[1].trim();
+  }
+  return null;
+}
+
+// Slugify a title
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .substring(0, 50);
+}
+
+// Read plan content and extract title
+const content = readFileSync(mostRecent.path, "utf-8");
+const title = extractTitle(content);
+
 // Generate date-prefixed filename
 const today = new Date().toISOString().split("T")[0];
-const originalName = basename(mostRecent.name, ".md");
-const targetName = `${today}-${originalName}.md`;
-const targetPath = join(targetDir, targetName);
+let targetName: string;
+
+if (title) {
+  const slug = slugify(title);
+  targetName = `${today}-${slug}.md`;
+} else {
+  const originalName = basename(mostRecent.name, ".md");
+  targetName = `${today}-${originalName}.md`;
+}
+
+// Avoid duplicates by appending number
+let targetPath = join(targetDir, targetName);
+let counter = 1;
+while (existsSync(targetPath)) {
+  const baseName = targetName.replace(".md", "");
+  targetPath = join(targetDir, `${baseName}-${counter}.md`);
+  counter++;
+}
 
 // Copy the file
 copyFileSync(mostRecent.path, targetPath);

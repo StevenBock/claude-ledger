@@ -14,6 +14,18 @@ Detect and parallelize independent tasks.
 - Need to parallelize independent tasks
 - Want systematic implement -> review cycles
 
+## Plan Selection
+
+If no plan is provided in context:
+
+1. Check `thoughts/shared/plans/` for available plans
+2. If multiple plans exist:
+   - Use `AskUserQuestion` to let user select one
+3. If one plan exists:
+   - Confirm with user before executing
+4. If no plans exist:
+   - Tell user to run `/planner` first or provide a plan path
+
 ## Workflow
 
 1. Parse plan to extract individual tasks

@@ -11,25 +11,34 @@ Execute an existing plan file. Use this after `/clear` to start execution with f
 After planning, if context is bloated:
 1. Note the plan file path
 2. Run `/clear`
-3. Run `/run-plan` and provide the plan file path
+3. Run `/run-plan` and select or provide the plan
 
 ## Process
 
-1. Ask user for the plan file path (e.g., `thoughts/shared/plans/2025-01-15-feature.md`)
-2. Read the plan file
-3. Invoke `/execute` with the plan
+### If plan path provided by user:
+1. Read the specified plan file
+2. Invoke `/execute` with the plan
 
-## What This Command Does
+### If no plan path provided:
+1. Check `thoughts/shared/plans/` for available plans
+2. If multiple plans exist, use `AskUserQuestion` to let user select one
+3. If one plan exists, confirm with user before executing
+4. If no plans exist, tell user to run `/planner` first
+5. Read the selected plan and invoke `/execute`
 
-- Reads the specified plan file
-- Passes it to the executor for parallel task batching
-- Implementer/reviewer cycles handle the actual work
-
-## Example
+## Example with selection
 
 ```
 User: /run-plan
-Assistant: What plan file should I execute?
-User: thoughts/shared/plans/2025-12-30-plugin-cards.md
+Assistant: Found 3 plans. Which would you like to execute?
+[Uses AskUserQuestion with plan options]
+User: [Selects plan]
+Assistant: [Reads plan, invokes /execute]
+```
+
+## Example with direct path
+
+```
+User: /run-plan thoughts/shared/plans/2025-12-30-feature.md
 Assistant: [Reads plan, invokes /execute]
 ```
