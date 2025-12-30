@@ -1,0 +1,21 @@
+{
+  "name": "@micode/artifact-index-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for artifact indexing and search",
+  "type": "module",
+  "main": "dist/server.mjs",
+  "scripts": {
+    "build": "esbuild src/server.ts --bundle --platform=node --format=esm --outfile=dist/server.mjs --packages=external",
+    "start": "node dist/server.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "better-sqlite3": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.0",
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.0"
+  }
+}

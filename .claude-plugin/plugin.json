@@ -1,0 +1,17 @@
+{
+  "name": "micode",
+  "version": "1.0.0",
+  "description": "Structured Brainstorm → Plan → Implement workflow with session continuity",
+  "author": {
+    "name": "vtemian",
+    "url": "https://github.com/vtemian"
+  },
+  "repository": "https://github.com/vtemian/micode",
+  "homepage": "https://github.com/vtemian/micode#readme",
+  "license": "MIT",
+  "keywords": ["workflow", "planning", "continuity", "brainstorm", "implementation"],
+  "commands": "./commands/",
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json"
+}

@@ -1,0 +1,6 @@
+node_modules/
+hooks/dist/
+servers/artifact-index/dist/
+thoughts/
+*.log
+.DS_Store

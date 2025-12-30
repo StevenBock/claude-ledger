@@ -1,0 +1,38 @@
+{
+  "name": "micode-claude",
+  "version": "1.0.0",
+  "description": "Claude Code plugin with Brainstorm → Plan → Implement workflow and session continuity",
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:hooks && npm run build:server",
+    "build:hooks": "esbuild hooks/src/*.ts --bundle --platform=node --format=esm --outdir=hooks/dist --packages=external --out-extension:.js=.mjs",
+    "build:server": "esbuild servers/artifact-index/src/server.ts --bundle --platform=node --format=esm --outfile=servers/artifact-index/dist/server.mjs --packages=external",
+    "clean": "rm -rf hooks/dist servers/artifact-index/dist",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "cd servers/artifact-index && npm install",
+    "server:artifact-index": "node servers/artifact-index/dist/server.mjs"
+  },
+  "bin": {
+    "micode-artifact-index": "./servers/artifact-index/run-server.sh"
+  },
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "workflow",
+    "planning",
+    "brainstorm",
+    "implementation",
+    "session-continuity"
+  ],
+  "author": "vtemian",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vtemian/micode.git"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.0"
+  }
+}
