@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "claudeledger",
-      "source": ".",
+      "source": "./",
       "description": "Structured Brainstorm → Plan → Implement workflow with session continuity",
       "version": "1.0.0",
       "license": "MIT",
