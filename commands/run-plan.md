@@ -21,10 +21,13 @@ After planning, if context is bloated:
 
 ### If no plan path provided:
 1. Check `thoughts/shared/plans/` for available plans
-2. If multiple plans exist, use `AskUserQuestion` to let user select one
-3. If one plan exists, confirm with user before executing
-4. If no plans exist, tell user to run `/planner` first
-5. Read the selected plan and invoke `/execute`
+2. Filter to plans from last 7 days by default
+3. If multiple plans exist, use `AskUserQuestion` to let user select one
+   - Include "Show older plans..." option if older plans exist
+4. If one plan exists, confirm with user before executing
+5. If no recent plans but older exist, inform user and offer to show all
+6. If no plans exist, tell user to run `/planner` first
+7. Read the selected plan and invoke `/execute`
 
 ## Example with selection
 
