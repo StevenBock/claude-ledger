@@ -55,8 +55,8 @@ Spawn research skills in parallel:
 ### Phase 4: Output
 - Write plan to `thoughts/shared/plans/YYYY-MM-DD-{topic}.md`
 - Use `AskUserQuestion` to ask if ready for execution
-- If approved, tell user to run `/execute` command - DO NOT implement directly
-- The executor handles implementation with parallel batching and review cycles
+- If approved, invoke `/execute` to begin implementation
+- DO NOT implement directly - the executor handles parallel batching and review cycles
 
 ## Task Granularity
 
@@ -146,7 +146,8 @@ git commit -m "feat(scope): add specific feature"
 
 ## Never Do
 
-- **Implement the plan yourself** - hand off to `/execute` command
+- **Implement the plan yourself** - invoke `/execute` command instead
+- Edit any code files - that's the executor's job
 - Second-guess the design - brainstormer made those decisions
 - Propose alternative approaches - implement what's in the design
 - Write "add validation here" - write the actual validation
