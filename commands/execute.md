@@ -191,6 +191,15 @@ Task("implementer: Execute task 4: [details]
 **Next**: [Ready to commit / Needs human decision on blocked tasks]
 ```
 
+## Archiving Completed Plans
+
+When ALL tasks complete successfully (no blocked tasks):
+1. Move the plan file from `thoughts/shared/plans/` to `thoughts/shared/plans/archive/`
+2. Create the archive directory if it doesn't exist
+3. Report: "Plan archived to thoughts/shared/plans/archive/{filename}"
+
+If any tasks are blocked, do NOT archive - the plan remains active.
+
 ## Never Do
 
 - Skip dependency analysis

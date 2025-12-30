@@ -8,16 +8,17 @@ List available plans or execute one by number.
 
 ## Usage
 
-- `/plans` - List recent plans (last 7 days) with numbers
+- `/plans` - List recent active plans (last 7 days) with numbers
 - `/plans 2` - Execute plan #2 from the list
-- `/plans all` - List all plans
+- `/plans all` - List all active plans
 - `/plans today` - List only today's plans
 - `/plans month` - List last 30 days
+- `/plans archive` - List completed/archived plans
 
 ## Process
 
 ### Listing Plans
-1. Check `thoughts/shared/plans/` directory for `.md` files
+1. Check `thoughts/shared/plans/` for active plans (or `archive/` subfolder if `/plans archive`)
 2. Parse date from filename prefix (YYYY-MM-DD)
 3. Apply filter (default: last 7 days)
 4. Sort by date descending (newest first)
