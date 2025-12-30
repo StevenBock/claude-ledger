@@ -64,12 +64,14 @@ Spawn research skills in parallel:
 - For each task, determine exact file paths from research
 - Write complete code examples following existing style
 - Include exact verification commands with expected output
-- Write plan to `thoughts/shared/plans/YYYY-MM-DD-{topic}.md`
+- Write plan to Claude Code's plan file (the one specified by plan mode)
 
-### Phase 5: Exit Plan Mode and Execute
-- Use `AskUserQuestion` to ask if ready for execution
-- If approved, use `ExitPlanMode` tool to exit plan mode
-- Then invoke `/execute` to begin implementation
+### Phase 5: Exit Plan Mode
+- Use `ExitPlanMode` tool to get user approval and exit plan mode
+
+### Phase 6: Copy Plan and Execute
+- After exiting plan mode, copy the plan file to `thoughts/shared/plans/YYYY-MM-DD-{topic}.md`
+- Invoke `/execute` to begin implementation
 - DO NOT implement directly - the executor handles parallel batching and review cycles
 
 ## Task Granularity
