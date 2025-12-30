@@ -84,7 +84,7 @@ Each step is ONE action (2-5 minutes):
 
 ## Output Format
 
-Write to: `thoughts/shared/plans/YYYY-MM-DD-{topic}.md`
+Write to Claude's plan file (auto-copied to `thoughts/shared/plans/pending/` on exit).
 
 ```markdown
 # [Feature Name] Implementation Plan

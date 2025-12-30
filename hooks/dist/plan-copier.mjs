@@ -6,7 +6,7 @@ import { join, basename } from "path";
 import { homedir } from "os";
 var plansDir = join(homedir(), ".claude", "plans");
 var projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
-var targetDir = join(projectDir, "thoughts", "shared", "plans");
+var targetDir = join(projectDir, "thoughts", "shared", "plans", "pending");
 if (!existsSync(plansDir)) {
   process.exit(0);
 }

@@ -6,44 +6,52 @@ description: List and execute plans from thoughts/shared/plans
 
 List available plans or execute one by number.
 
+## Folder Structure
+
+```
+thoughts/shared/plans/
+├── pending/   <- new plans waiting to be executed
+├── active/    <- currently being executed
+└── done/      <- completed plans
+```
+
 ## Usage
 
-- `/plans` - List recent active plans (last 7 days) with numbers
-- `/plans 2` - Execute plan #2 from the list
-- `/plans all` - List all active plans
-- `/plans today` - List only today's plans
-- `/plans month` - List last 30 days
-- `/plans archive` - List completed/archived plans
+- `/plans` - List pending plans (default)
+- `/plans 2` - Execute plan #2 from pending
+- `/plans active` - Show currently executing plan(s)
+- `/plans done` - List completed plans
+- `/plans all` - List all plans across all folders
 
 ## Process
 
 ### Listing Plans
-1. Check `thoughts/shared/plans/` for active plans (or `archive/` subfolder if `/plans archive`)
+1. Check appropriate subfolder based on argument:
+   - Default/no arg: `pending/`
+   - `active`: `active/`
+   - `done`: `done/`
+   - `all`: all subfolders
 2. Parse date from filename prefix (YYYY-MM-DD)
-3. Apply filter (default: last 7 days)
-4. Sort by date descending (newest first)
-5. Number each plan for reference
-6. Show filename, title, and age
+3. Sort by date descending (newest first)
+4. Number each plan for reference
+5. Show filename, title, and status folder
 
 ### Executing a Plan
 When user provides a number:
-1. Map number to the corresponding plan from the filtered list
+1. Map number to the corresponding plan from pending list
 2. Read the plan file
 3. Invoke `/execute` with the plan content
 
 ## Output Format (Listing)
 
 ```
-Plans (last 7 days):
+Pending plans:
 
   1. feature-auth (today)
      "User Authentication Implementation Plan"
 
   2. refactor-api (today)
      "API Refactoring Plan"
-
-  3. new-dashboard (2 days ago)
-     "Dashboard Feature Plan"
 
 Run `/plans <number>` to execute a plan
 ```
@@ -55,16 +63,10 @@ Executing plan #2: refactor-api
 [Invokes /execute with plan content]
 ```
 
-## If No Plans Match Filter
+## If No Pending Plans
 
 ```
-No plans from the last 7 days.
+No pending plans.
 
-Run `/plans all` to see older plans, or /planner to create one.
-```
-
-## If No Plans Exist
-
-```
-No plans found. Run /planner to create one.
+Run /planner to create one, or `/plans done` to see completed plans.
 ```

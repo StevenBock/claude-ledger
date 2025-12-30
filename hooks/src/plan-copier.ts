@@ -6,7 +6,7 @@ import { homedir } from "os";
 // Find most recent plan file in ~/.claude/plans/
 const plansDir = join(homedir(), ".claude", "plans");
 const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
-const targetDir = join(projectDir, "thoughts", "shared", "plans");
+const targetDir = join(projectDir, "thoughts", "shared", "plans", "pending");
 
 if (!existsSync(plansDir)) {
   process.exit(0);
