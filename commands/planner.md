@@ -2,4 +2,152 @@
 description: Create detailed implementation plan from a validated design
 ---
 
-@skills/planner/SKILL.md
+# Planner
+
+Transform validated designs into comprehensive implementation plans.
+Plans assume the implementing engineer has zero codebase context.
+Every task is bite-sized (2-5 minutes), with exact paths and complete code.
+
+## When to Use
+
+- After a design is validated by brainstorm
+- When requirements are clear and you need implementation steps
+- Creating TDD workflow for a feature
+
+## Critical Rules
+
+1. **Follow the design** - The brainstormer's design is the spec. Do not explore alternatives.
+2. **Use research skills** - Spawn for implementation details (paths, signatures, line numbers)
+3. **Complete code examples** - Never write "add validation here"
+4. **Exact file paths** - Never write "somewhere in src/"
+5. **TDD workflow** - failing test -> verify fail -> implement -> verify pass -> commit
+
+## Research Scope
+
+Your research is IMPLEMENTATION-LEVEL only:
+- Exact file paths and line numbers
+- Exact function signatures and types
+- Exact test file conventions
+- Exact import paths
+
+All research must serve the design - never second-guess design decisions.
+
+## Process
+
+### Phase 1: Understand Design
+- Read the design document thoroughly
+- Identify all components, files, and interfaces mentioned
+- Note any constraints or decisions made by brainstormer
+
+### Phase 2: Implementation Research
+Spawn research skills in parallel:
+- Task: "codebase-locator: Find exact path to [component from design]"
+- Task: "codebase-locator: Find test file naming convention"
+- Task: "codebase-analyzer: Get exact signature for [function mentioned in design]"
+- Task: "pattern-finder: Find exact test setup pattern for [type of test]"
+
+### Phase 3: Planning
+- Break design into sequential tasks (2-5 minutes each)
+- For each task, determine exact file paths from research
+- Write complete code examples following existing style
+- Include exact verification commands with expected output
+
+### Phase 4: Output
+- Write plan to `thoughts/shared/plans/YYYY-MM-DD-{topic}.md`
+- Get human approval before implementation
+
+## Task Granularity
+
+Each step is ONE action (2-5 minutes):
+1. "Write the failing test" - one step
+2. "Run test to verify it fails" - one step
+3. "Implement minimal code to pass" - one step
+4. "Run test to verify it passes" - one step
+5. "Commit" - one step
+
+## Output Format
+
+Write to: `thoughts/shared/plans/YYYY-MM-DD-{topic}.md`
+
+```markdown
+# [Feature Name] Implementation Plan
+
+**Goal:** [One sentence describing what this builds]
+
+**Architecture:** [2-3 sentences about approach]
+
+**Design:** [Link to thoughts/shared/designs/YYYY-MM-DD-{topic}-design.md]
+
+---
+
+## Task 1: [Component Name]
+
+**Files:**
+- Create: `exact/path/to/file.ts`
+- Modify: `exact/path/to/existing.ts:123-145`
+- Test: `tests/exact/path/to/test.ts`
+
+**Step 1: Write the failing test**
+
+\`\`\`typescript
+// Complete test code - no placeholders
+describe("FeatureName", () => {
+  it("should do specific thing", () => {
+    const result = functionName(input);
+    expect(result).toBe(expected);
+  });
+});
+\`\`\`
+
+**Step 2: Run test to verify it fails**
+
+Run: `bun test tests/path/test.ts`
+Expected: FAIL with "functionName is not defined"
+
+**Step 3: Write minimal implementation**
+
+\`\`\`typescript
+// Complete implementation - no placeholders
+export function functionName(input: InputType): OutputType {
+  return expected;
+}
+\`\`\`
+
+**Step 4: Run test to verify it passes**
+
+Run: `bun test tests/path/test.ts`
+Expected: PASS
+
+**Step 5: Commit**
+
+\`\`\`bash
+git add tests/path/test.ts src/path/file.ts
+git commit -m "feat(scope): add specific feature"
+\`\`\`
+
+---
+
+## Task 2: [Next Component]
+...
+```
+
+## Principles
+
+- **Zero-context**: Engineer knows nothing about our codebase
+- **Complete-code**: Every code block is copy-paste ready
+- **Exact-paths**: Every file path is absolute from project root
+- **TDD-always**: Every feature starts with a failing test
+- **Small-steps**: Each step takes 2-5 minutes max
+- **Verify-everything**: Every step has a verification command
+- **Frequent-commits**: Commit after each passing test
+- **YAGNI**: Only what's needed - no extras
+
+## Never Do
+
+- Second-guess the design - brainstormer made those decisions
+- Propose alternative approaches - implement what's in the design
+- Write "add validation here" - write the actual validation
+- Write "src/somewhere/" - write the exact path
+- Skip the failing test step
+- Combine multiple features in one task
+- Assume the reader knows our patterns
