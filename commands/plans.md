@@ -1,47 +1,57 @@
 ---
-description: List available plans in thoughts/shared/plans (default: last 7 days)
+description: List and execute plans from thoughts/shared/plans
 ---
 
 # Plans
 
-List available plans with filtering options.
+List available plans or execute one by number.
 
-## Arguments
+## Usage
 
-- No args: Show plans from the last 7 days (default)
-- `all`: Show all plans
-- `N` (number): Show last N plans
-- `today`: Show only today's plans
-- `week`: Show last 7 days (same as default)
-- `month`: Show last 30 days
+- `/plans` - List recent plans (last 7 days) with numbers
+- `/plans 2` - Execute plan #2 from the list
+- `/plans all` - List all plans
+- `/plans today` - List only today's plans
+- `/plans month` - List last 30 days
 
 ## Process
 
+### Listing Plans
 1. Check `thoughts/shared/plans/` directory for `.md` files
 2. Parse date from filename prefix (YYYY-MM-DD)
-3. Apply filter based on argument
+3. Apply filter (default: last 7 days)
 4. Sort by date descending (newest first)
-5. For each plan, show:
-   - Filename
-   - Title (first # heading or **Goal:** line)
-   - Age indicator (e.g., "today", "2 days ago")
+5. Number each plan for reference
+6. Show filename, title, and age
 
-## Output Format
+### Executing a Plan
+When user provides a number:
+1. Map number to the corresponding plan from the filtered list
+2. Read the plan file
+3. Invoke `/execute` with the plan content
+
+## Output Format (Listing)
 
 ```
-Plans from last 7 days (3 found):
+Plans (last 7 days):
 
-1. 2025-12-30-feature-auth.md (today)
-   "User Authentication Implementation Plan"
+  1. feature-auth (today)
+     "User Authentication Implementation Plan"
 
-2. 2025-12-30-refactor-api.md (today)
-   "API Refactoring Plan"
+  2. refactor-api (today)
+     "API Refactoring Plan"
 
-3. 2025-12-28-new-dashboard.md (2 days ago)
-   "Dashboard Feature Plan"
+  3. new-dashboard (2 days ago)
+     "Dashboard Feature Plan"
 
-To execute a plan, run /run-plan or /execute
-Tip: Use `/plans all` to see all plans, `/plans 5` for last 5
+Run `/plans <number>` to execute a plan
+```
+
+## Output Format (Executing)
+
+```
+Executing plan #2: refactor-api
+[Invokes /execute with plan content]
 ```
 
 ## If No Plans Match Filter
@@ -49,14 +59,11 @@ Tip: Use `/plans all` to see all plans, `/plans 5` for last 5
 ```
 No plans from the last 7 days.
 
-Older plans exist - run `/plans all` to see all plans.
-Or run /planner to create a new plan.
+Run `/plans all` to see older plans, or /planner to create one.
 ```
 
 ## If No Plans Exist
 
 ```
-No plans found in thoughts/shared/plans/
-
-Run /planner to create a new plan.
+No plans found. Run /planner to create one.
 ```

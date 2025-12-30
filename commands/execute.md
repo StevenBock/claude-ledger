@@ -17,18 +17,8 @@ Detect and parallelize independent tasks.
 ## Plan Selection
 
 If no plan is provided in context:
-
-1. Check `thoughts/shared/plans/` for available plans
-2. Filter to plans from last 7 days by default
-3. If multiple recent plans exist:
-   - Use `AskUserQuestion` to let user select one
-   - Include "Show older plans..." option if older plans exist
-4. If one recent plan exists:
-   - Confirm with user before executing
-5. If no recent plans but older exist:
-   - Inform user and offer to show all plans
-6. If no plans exist:
-   - Tell user to run `/planner` first or provide a plan path
+- Tell user to run `/plans` to see available plans and select one
+- Or run `/planner` to create a new plan
 
 ## Workflow
 
