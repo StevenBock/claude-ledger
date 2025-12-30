@@ -1,5 +1,6 @@
 ---
-description: Finds WHERE files live in the codebase (paths only, no content analysis)
+name: codebase-locator
+description: Finds WHERE files live in the codebase (paths only, no content analysis). Use when you need to locate files by name, pattern, or purpose.
 ---
 
 # Codebase Locator

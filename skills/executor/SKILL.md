@@ -1,5 +1,6 @@
 ---
-description: Executes plan tasks with parallel execution where possible
+name: executor
+description: Executes plan tasks with parallel execution where possible. Use when you have an approved implementation plan ready to execute.
 ---
 
 # Executor

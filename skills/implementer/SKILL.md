@@ -1,5 +1,6 @@
 ---
-description: Executes implementation tasks from a plan
+name: implementer
+description: Executes implementation tasks from a plan. Use when executing a single task from an implementation plan with TDD workflow.
 ---
 
 # Implementer

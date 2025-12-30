@@ -1,5 +1,6 @@
 ---
-description: Refines rough ideas into fully-formed designs through collaborative questioning
+name: brainstorm
+description: Refines rough ideas into fully-formed designs through collaborative questioning. Use when starting a new feature, exploring approaches, or need human buy-in on design decisions.
 ---
 
 # Brainstorm

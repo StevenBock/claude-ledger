@@ -1,5 +1,6 @@
 ---
-description: Finds existing patterns and examples to model after
+name: pattern-finder
+description: Finds existing patterns and examples to model after. Use when you need to find 2-3 examples of how something is done in the codebase.
 ---
 
 # Pattern Finder

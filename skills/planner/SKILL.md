@@ -1,5 +1,6 @@
 ---
-description: Creates detailed implementation plans with exact file paths, complete code examples, and TDD steps
+name: planner
+description: Creates detailed implementation plans with exact file paths, complete code examples, and TDD steps. Use when you have a validated design ready to be turned into an implementation plan.
 ---
 
 # Planner

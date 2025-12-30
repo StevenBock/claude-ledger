@@ -1,6 +1,6 @@
 {
   "name": "claudeledger",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Structured Brainstorm → Plan → Implement workflow with session continuity",
   "author": {
     "name": "StevenBock",

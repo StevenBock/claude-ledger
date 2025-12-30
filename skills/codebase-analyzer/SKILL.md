@@ -1,5 +1,6 @@
 ---
-description: Explains HOW code works with precise file:line references
+name: codebase-analyzer
+description: Explains HOW code works with precise file:line references. Use when you need to understand code behavior, trace data flow, or document existing functionality.
 ---
 
 # Codebase Analyzer

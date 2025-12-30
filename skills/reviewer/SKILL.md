@@ -1,5 +1,6 @@
 ---
-description: Reviews implementation for correctness and style
+name: reviewer
+description: Reviews implementation for correctness and style. Use when verifying that implemented code matches the plan and passes tests.
 ---
 
 # Reviewer
