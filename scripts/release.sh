@@ -31,6 +31,6 @@ sed -i '' "s/\"version\": \"$CURRENT_VERSION\"/\"version\": \"$NEW_VERSION\"/" "
 cd "$ROOT_DIR"
 git add -A
 git commit -m "$COMMIT_MSG, bump to $NEW_VERSION"
-git push
+git push -u origin main 2>/dev/null || git push
 
 echo "Released version $NEW_VERSION"
