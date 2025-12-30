@@ -16,12 +16,13 @@ This is DESIGN ONLY. The planner skill handles detailed implementation plans.
 
 ## Critical Rules
 
-1. **ALWAYS use AskUserQuestion tool** - NEVER ask questions as plain text. EVERY question MUST use the AskUserQuestion tool with structured options.
-2. **One question at a time** - Wait for response before continuing
-3. **NO CODE** - Never write code examples, stay at design level
-4. **Spawn research in parallel** - Use Task tool with codebase-locator, codebase-analyzer, pattern-finder
+1. **Start with open prompt** - First, ask user to describe their idea/problem in their own words
+2. **Use AskUserQuestion for clarifying questions** - After user provides details, use AskUserQuestion tool for all follow-up questions with structured options
+3. **One question at a time** - Wait for response before continuing
+4. **NO CODE** - Never write code examples, stay at design level
+5. **Spawn research in parallel** - Use Task tool with codebase-locator, codebase-analyzer, pattern-finder
 
-**IMPORTANT**: Do NOT write questions as prose. Use `AskUserQuestion` for ALL user input.
+**IMPORTANT**: Let user describe their idea first, THEN use `AskUserQuestion` for clarifying questions.
 
 ## Research Subagents
 
@@ -77,8 +78,13 @@ AskUserQuestion(questions: [
 
 ## Process
 
+### Phase 0: Initial Prompt
+- Ask user to describe their idea, problem, or feature in their own words
+- Wait for their response before proceeding
+- Do NOT use AskUserQuestion yet - let them explain freely
+
 ### Phase 1: Understanding
-- Spawn research skills in parallel to gather context
+- Spawn research skills in parallel to gather context based on what user described
 - Use `AskUserQuestion` to clarify purpose, constraints, success criteria
 - One question at a time, wait for answer
 
@@ -149,7 +155,8 @@ Unresolved items, if any
 
 ## Never Do
 
-- Ask questions as plain text - ALWAYS use AskUserQuestion tool
+- Use AskUserQuestion before user has described their idea (let them explain first)
+- Ask clarifying questions as plain text after Phase 0 (use AskUserQuestion)
 - Write code snippets or examples
 - Provide file paths with line numbers
 - Specify exact function signatures
