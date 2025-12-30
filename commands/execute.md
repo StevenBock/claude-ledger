@@ -193,24 +193,42 @@ Task("implementer: Execute task 4: [details]
 
 ## Plan Lifecycle
 
-Plans move through folders as they progress:
+Plans move through folders and their embedded status is updated:
 
 ```
 pending/ -> active/ -> done/
 ```
 
+### Status Block in Plan
+
+Plans contain an executor status block that only the executor should update:
+
+```markdown
+<!-- EXECUTOR STATUS (auto-managed by /execute - do not edit) -->
+| Field | Value |
+|-------|-------|
+| Status | `pending` |
+| Started | - |
+| Completed | - |
+| Progress | 0/N tasks |
+<!-- END EXECUTOR STATUS -->
+```
+
 ### On Execution Start
-1. Move plan from `thoughts/shared/plans/pending/` to `thoughts/shared/plans/active/`
-2. Create the active directory if it doesn't exist
+1. Move plan from `pending/` to `active/`
+2. Update status block: Status=`active`, Started=YYYY-MM-DD HH:MM
+
+### On Task Completion
+1. Update Progress field: `3/5 tasks`
 
 ### On Execution Complete (all tasks done)
-1. Move plan from `active/` to `thoughts/shared/plans/done/`
-2. Create the done directory if it doesn't exist
-3. Report: "Plan completed and moved to done/"
+1. Move plan from `active/` to `done/`
+2. Update status block: Status=`done`, Completed=YYYY-MM-DD HH:MM, Progress=`N/N tasks`
 
 ### On Execution Blocked (any tasks blocked)
-1. Keep plan in `active/` - it's still in progress
-2. User can re-run `/execute` to retry blocked tasks
+1. Keep plan in `active/`
+2. Update Progress to show completed count
+3. User can re-run `/execute` to retry blocked tasks
 
 ## Never Do
 

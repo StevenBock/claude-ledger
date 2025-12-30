@@ -83,10 +83,19 @@ Each step is ONE action (2-5 minutes):
 
 ## Output Format
 
-Write to: `thoughts/shared/plans/YYYY-MM-DD-{topic}.md`
+Write to Claude's plan file (auto-copied to `thoughts/shared/plans/pending/` on exit).
 
 ```markdown
 # [Feature Name] Implementation Plan
+
+<!-- EXECUTOR STATUS (auto-managed by /execute - do not edit) -->
+| Field | Value |
+|-------|-------|
+| Status | `pending` |
+| Started | - |
+| Completed | - |
+| Progress | 0/N tasks |
+<!-- END EXECUTOR STATUS -->
 
 **Goal:** [One sentence describing what this builds]
 

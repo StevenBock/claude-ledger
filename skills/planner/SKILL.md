@@ -89,6 +89,15 @@ Write to Claude's plan file (auto-copied to `thoughts/shared/plans/pending/` on 
 ```markdown
 # [Feature Name] Implementation Plan
 
+<!-- EXECUTOR STATUS (auto-managed by /execute - do not edit) -->
+| Field | Value |
+|-------|-------|
+| Status | `pending` |
+| Started | - |
+| Completed | - |
+| Progress | 0/N tasks |
+<!-- END EXECUTOR STATUS -->
+
 **Goal:** [One sentence describing what this builds]
 
 **Architecture:** [2-3 sentences about approach]
