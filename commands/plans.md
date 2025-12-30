@@ -1,5 +1,6 @@
 ---
 description: List and execute plans from thoughts/shared/plans
+argument-hint: [number | active | done | all]
 ---
 
 # Plans
@@ -17,6 +18,15 @@ thoughts/shared/plans/
 └── done/      <- completed plans
 ```
 
+## Argument
+
+The argument is available as `$1` or `$ARGUMENTS`:
+- Number (e.g., `2`) → Execute that plan from pending
+- `active` → List plans in active folder
+- `done` → List completed plans
+- `all` → List all plans
+- Empty → List pending plans
+
 ## Usage
 
 - `/plans` - List pending plans (default)
@@ -26,6 +36,12 @@ thoughts/shared/plans/
 - `/plans all` - List all plans across all folders
 
 ## Process
+
+### Check Argument
+First, check what `$1` contains:
+- If numeric → go to "Executing a Plan"
+- If `active`, `done`, or `all` → go to "Listing Plans" with that folder
+- If empty → go to "Listing Plans" with `pending`
 
 ### Listing Plans
 1. Use Glob tool to find `.md` files in appropriate subfolder:
