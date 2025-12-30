@@ -16,11 +16,13 @@ Every task is bite-sized (2-5 minutes), with exact paths and complete code.
 
 ## Critical Rules
 
-1. **Follow the design** - The brainstormer's design is the spec. Do not explore alternatives.
-2. **Use research skills** - Spawn for implementation details (paths, signatures, line numbers)
-3. **Complete code examples** - Never write "add validation here"
-4. **Exact file paths** - Never write "somewhere in src/"
-5. **TDD workflow** - failing test -> verify fail -> implement -> verify pass -> commit
+1. **Start with open prompt** - Ask user to describe what they want to plan or point to a design file
+2. **Use AskUserQuestion for clarifying questions** - After user provides details, use AskUserQuestion for follow-ups
+3. **Follow the design** - The brainstormer's design is the spec. Do not explore alternatives.
+4. **Use research skills** - Spawn for implementation details (paths, signatures, line numbers)
+5. **Complete code examples** - Never write "add validation here"
+6. **Exact file paths** - Never write "somewhere in src/"
+7. **TDD workflow** - failing test -> verify fail -> implement -> verify pass -> commit
 
 ## Research Scope
 
@@ -33,6 +35,11 @@ Your research is IMPLEMENTATION-LEVEL only:
 All research must serve the design - never second-guess design decisions.
 
 ## Process
+
+### Phase 0: Initial Prompt
+- Ask user to describe what they want to plan or point to a design file
+- Wait for their response before proceeding
+- Do NOT use AskUserQuestion yet - let them explain freely
 
 ### Phase 1: Enter Plan Mode
 - Use `EnterPlanMode` tool to enter plan mode
