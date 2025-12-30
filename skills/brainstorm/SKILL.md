@@ -16,10 +16,12 @@ This is DESIGN ONLY. The planner skill handles detailed implementation plans.
 
 ## Critical Rules
 
-1. **Use AskUserQuestion tool** - Present options with clear trade-offs, let user choose direction
-2. **Ask one question at a time** - Wait for response before continuing
+1. **ALWAYS use AskUserQuestion tool** - NEVER ask questions as plain text. EVERY question MUST use the AskUserQuestion tool with structured options.
+2. **One question at a time** - Wait for response before continuing
 3. **NO CODE** - Never write code examples, stay at design level
 4. **Spawn research in parallel** - Use Task tool with codebase-locator, codebase-analyzer, pattern-finder
+
+**IMPORTANT**: Do NOT write questions as prose. Use `AskUserQuestion` for ALL user input.
 
 ## Research Subagents
 
@@ -136,6 +138,7 @@ Unresolved items, if any
 
 ## Never Do
 
+- Ask questions as plain text - ALWAYS use AskUserQuestion tool
 - Write code snippets or examples
 - Provide file paths with line numbers
 - Specify exact function signatures
