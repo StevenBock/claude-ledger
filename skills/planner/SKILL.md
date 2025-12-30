@@ -11,9 +11,10 @@ Every task is bite-sized (2-5 minutes), with exact paths and complete code.
 
 ## When to Use
 
-- After a design is validated by brainstorm
+- After a design is validated by brainstorm (optional - can skip brainstorm)
 - When requirements are clear and you need implementation steps
 - Creating TDD workflow for a feature
+- When you want to plan directly without a formal design phase
 
 ## Critical Rules
 
@@ -46,10 +47,11 @@ All research must serve the design - never second-guess design decisions.
 - Use `EnterPlanMode` tool to enter plan mode
 - This ensures safe research without accidental edits
 
-### Phase 2: Understand Design
-- Read the design document thoroughly
+### Phase 2: Understand Requirements
+- If design file exists, read it thoroughly
+- If no design file, use user's description as the requirements
 - Identify all components, files, and interfaces mentioned
-- Note any constraints or decisions made by brainstormer
+- Note any constraints or decisions
 
 ### Phase 3: Implementation Research
 Spawn research skills in parallel:
