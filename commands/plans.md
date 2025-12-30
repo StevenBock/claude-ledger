@@ -6,6 +6,8 @@ description: List and execute plans from thoughts/shared/plans
 
 List available plans or execute one by number.
 
+**IMPORTANT**: Plan numbers refer to files in `thoughts/shared/plans/` folders, NOT beads/bd issues. Do NOT use the `bd` command. Read plan files directly from the filesystem.
+
 ## Folder Structure
 
 ```
@@ -26,21 +28,23 @@ thoughts/shared/plans/
 ## Process
 
 ### Listing Plans
-1. Check appropriate subfolder based on argument:
-   - Default/no arg: `pending/`
-   - `active`: `active/`
-   - `done`: `done/`
-   - `all`: all subfolders
+1. Use Glob tool to find `.md` files in appropriate subfolder:
+   - Default/no arg: `thoughts/shared/plans/pending/*.md`
+   - `active`: `thoughts/shared/plans/active/*.md`
+   - `done`: `thoughts/shared/plans/done/*.md`
+   - `all`: `thoughts/shared/plans/**/*.md`
 2. Parse date from filename prefix (YYYY-MM-DD)
 3. Sort by date descending (newest first)
-4. Number each plan for reference
+4. Number each plan (1, 2, 3...) for reference
 5. Show filename, title, and status folder
 
 ### Executing a Plan
-When user provides a number:
-1. Map number to the corresponding plan from pending list
-2. Read the plan file
-3. Invoke `/execute` with the plan content
+When user provides a number (e.g., `/plans 2`):
+1. First list plans from `thoughts/shared/plans/pending/` using Glob
+2. Sort by date descending and number them (1, 2, 3...)
+3. Map the user's number to the corresponding filename
+4. Use Read tool to read that plan file
+5. Invoke `/execute` with the plan content
 
 ## Output Format (Listing)
 

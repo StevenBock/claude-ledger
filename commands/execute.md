@@ -8,6 +8,8 @@ Execute plan tasks with maximum parallelism.
 Each task gets its own implementer -> reviewer cycle.
 Detect and parallelize independent tasks.
 
+**IMPORTANT**: Plans are markdown files in `thoughts/shared/plans/` folders. Do NOT use the `bd` command or beads. Read plan files directly from the filesystem using Glob and Read tools.
+
 ## When to Use
 
 - Executing an approved implementation plan
