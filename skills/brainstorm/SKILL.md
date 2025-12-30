@@ -41,28 +41,39 @@ In a SINGLE message, spawn:
 
 ## Using AskUserQuestion
 
-Use the `AskUserQuestion` tool to gather structured input:
+**WRONG - Do NOT do this:**
+```
+What's the primary pain point?
+- Cards feel too cluttered/busy?
+- Hard to scan/compare plugins quickly?
+- Stats section not informative enough?
+```
 
+**RIGHT - Always do this instead:**
 ```
 AskUserQuestion(questions: [
   {
-    question: "Which approach should we use for authentication?",
-    header: "Auth method",
+    question: "What's the primary pain point with the current UI?",
+    header: "Pain point",
     options: [
-      { label: "JWT tokens (Recommended)", description: "Stateless, scalable, good for APIs" },
-      { label: "Session cookies", description: "Simpler, better for traditional web apps" },
-      { label: "OAuth only", description: "Delegate to external providers" }
+      { label: "Too cluttered", description: "Cards have too much information, hard to scan" },
+      { label: "Poor visual hierarchy", description: "Can't quickly find what matters" },
+      { label: "Confusing actions", description: "Not clear how to deploy or manage plugins" },
+      { label: "Missing information", description: "Need more details shown on cards" }
     ],
-    multiSelect: false
+    multiSelect: true
   }
 ])
 ```
+
+**EVERY question to the user MUST use this tool. No exceptions.**
 
 **When to use:**
 - Choosing between approaches (always lead with recommended option)
 - Clarifying requirements or constraints
 - Validating assumptions before proceeding
 - Getting sign-off on design sections
+- ANY time you need user input
 
 ## Process
 
