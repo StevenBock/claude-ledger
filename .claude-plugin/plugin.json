@@ -1,6 +1,6 @@
 {
   "name": "claudeledger",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Structured Brainstorm → Plan → Implement workflow with session continuity",
   "author": {
     "name": "StevenBock",
@@ -12,6 +12,5 @@
   "keywords": ["workflow", "planning", "continuity", "brainstorm", "implementation"],
   "commands": "./commands/",
   "skills": "./skills/",
-  "hooks": "./hooks/hooks.json",
   "mcpServers": "./.mcp.json"
 }
