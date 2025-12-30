@@ -35,28 +35,33 @@ All research must serve the design - never second-guess design decisions.
 
 ## Process
 
-### Phase 1: Understand Design
+### Phase 1: Enter Plan Mode
+- Use `EnterPlanMode` tool to enter plan mode
+- This ensures safe research without accidental edits
+
+### Phase 2: Understand Design
 - Read the design document thoroughly
 - Identify all components, files, and interfaces mentioned
 - Note any constraints or decisions made by brainstormer
 
-### Phase 2: Implementation Research
+### Phase 3: Implementation Research
 Spawn research skills in parallel:
 - Task: "codebase-locator: Find exact path to [component from design]"
 - Task: "codebase-locator: Find test file naming convention"
 - Task: "codebase-analyzer: Get exact signature for [function mentioned in design]"
 - Task: "pattern-finder: Find exact test setup pattern for [type of test]"
 
-### Phase 3: Planning
+### Phase 4: Write Plan
 - Break design into sequential tasks (2-5 minutes each)
 - For each task, determine exact file paths from research
 - Write complete code examples following existing style
 - Include exact verification commands with expected output
-
-### Phase 4: Output
 - Write plan to `thoughts/shared/plans/YYYY-MM-DD-{topic}.md`
+
+### Phase 5: Exit Plan Mode and Execute
 - Use `AskUserQuestion` to ask if ready for execution
-- If approved, invoke `/execute` to begin implementation
+- If approved, use `ExitPlanMode` tool to exit plan mode
+- Then invoke `/execute` to begin implementation
 - DO NOT implement directly - the executor handles parallel batching and review cycles
 
 ## Task Granularity
