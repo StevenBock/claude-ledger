@@ -61,7 +61,26 @@ Example for 3-phase plan:
 - Phase 2: Tasks C, D (each depends on A AND B)
 - Phase 3: Task E (depends on C AND D)
 
-### Step 5: Return Summary
+### Step 5: Update Plan with Epic ID
+
+Add the epic ID to the plan's EXECUTOR STATUS table. If the table exists, add an Epic row:
+
+```markdown
+| Epic | `bd-a1b2` |
+```
+
+If no EXECUTOR STATUS table exists, add one after the first H1:
+
+```markdown
+<!-- EXECUTOR STATUS -->
+| Field | Value |
+|-------|-------|
+| Epic | `bd-a1b2` |
+| Status | `pending` |
+<!-- END EXECUTOR STATUS -->
+```
+
+### Step 6: Return Summary
 
 Report epic ID and structure to executor.
 
@@ -151,7 +170,6 @@ If some tasks created but others fail:
 
 ## Never Do
 
-- Modify the plan file
 - Execute any plan tasks
 - Create dependencies within same phase (same-phase tasks are parallel)
 - Continue silently on critical errors (epic creation failure)
