@@ -46,12 +46,40 @@ Execute the plan. Write code. Verify.
 - Check for type errors
 - Verify no regressions
 
+## On Task Completion
+
+After successful implementation and all verifications pass:
+
+1. **Add notes to Beads issue:**
+   ```bash
+   bd comment <beads-id> "Implementation complete.
+
+   Files modified:
+   - path/to/file.ts (created)
+   - path/to/other.ts (modified)
+
+   Key decisions:
+   - Used pattern X for Y
+   - Added Z for edge case"
+   ```
+
+2. **Close the Beads issue:**
+   ```bash
+   bd done <beads-id>
+   ```
+   This unblocks dependent tasks in subsequent phases.
+
+3. Return result to executor with Beads status.
+
+**Important:** Only close the issue if implementation is complete and verified. Failed tasks must leave the issue open to block dependents.
+
 ## Input
 
 You will receive file paths (read them yourself to save tokens):
 1. **Plan** - Path to the plan file (e.g., `thoughts/shared/plans/active/...`)
 2. **Task** - Task number to execute from the plan
-3. **Previous Handoff** (if applicable) - Path to handoff from earlier batch
+3. **Beads ID** - Beads issue ID for this task (e.g., `bd-a1b2.3`)
+4. **Previous Handoff** (if applicable) - Path to handoff from earlier batch
 
 ## First Steps
 
@@ -77,6 +105,8 @@ Use the handoff (if provided) to understand:
 ```markdown
 ## Task: [Description]
 
+**Beads ID:** <beads-id>
+
 **Changes**:
 - `file:line` - [what changed]
 
@@ -84,6 +114,8 @@ Use the handoff (if provided) to understand:
 - [x] Tests pass
 - [x] Types check
 - [ ] Manual check needed: [what]
+
+**Beads Status:** Closed / Open (if blocked or failed)
 
 **Issues**: None / [description]
 
@@ -94,17 +126,22 @@ Use the handoff (if provided) to understand:
 - [Patterns used that next tasks should follow]
 ```
 
-## On Mismatch
+## On Mismatch or Failure
 
 ```markdown
-MISMATCH
+MISMATCH / FAILURE
 
 Expected: [plan says]
 Found: [reality]
 Location: `file:line`
 
+**Beads ID:** <beads-id>
+**Beads Status:** Open (NOT closed - blocks dependents)
+
 Awaiting guidance.
 ```
+
+Do NOT close the Beads issue on mismatch or failure. Leaving it open ensures dependent tasks remain blocked until the issue is resolved.
 
 ## Never Do
 

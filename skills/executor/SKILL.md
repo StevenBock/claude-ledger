@@ -22,6 +22,17 @@ Before any task execution:
 1. Move plan file from `pending/` to `active/`
 2. Update status block: Status=`active`, Started=YYYY-MM-DD HH:MM
 
+### SECOND: Sync to Beads (MANDATORY)
+After activating plan:
+1. Spawn beads-sync subagent with plan path:
+   ```
+   Task("beads-sync: Create Beads epic from plan
+
+   Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md")
+   ```
+2. Capture epic ID from response
+3. Store epic ID for main execution loop
+
 ### Execute Tasks
 1. Parse plan to extract individual tasks
 2. Analyze task dependencies to build execution graph
@@ -38,52 +49,68 @@ After all tasks finish:
 1. If all tasks DONE: Move plan from `active/` to `done/`, update Status=`done`, Completed=YYYY-MM-DD HH:MM
 2. If any tasks BLOCKED: Keep in `active/`, update Progress to show completed count
 
-## Dependency Analysis
+## Dependency Management
 
-Tasks are INDEPENDENT (can parallelize) when:
-- They modify different files
-- They don't depend on each other's output
-- They don't share state
+Dependencies are managed by Beads, not manual analysis. The beads-sync subagent creates phase-based dependencies automatically:
+- Phase 1 tasks: No dependencies (ready immediately)
+- Phase N tasks: Blocked until ALL Phase N-1 tasks complete
 
-Tasks are DEPENDENT (must be sequential) when:
-- Task B modifies a file that Task A creates
-- Task B imports/uses something Task A defines
-- Task B's test relies on Task A's implementation
-- Plan explicitly states ordering
+Use `bd ready --epic <epic-id>` to get unblocked tasks.
 
-When uncertain, assume DEPENDENT (safer).
-
-## Execution Pattern
+## Main Execution Loop
 
 ```
-Plan with 6 tasks:
-├── Batch 1 (parallel): Tasks 1, 2, 3 -> independent, different files
-│   ├── Task("implementer: task 1")
-│   ├── Task("implementer: task 2")
-│   └── Task("implementer: task 3")
-│   [wait for all]
-│   ├── Task("reviewer: task 1")
-│   ├── Task("reviewer: task 2")
-│   └── Task("reviewer: task 3")
-│   [wait for all]
-│   └── Generate Batch 1 Handoff
-│
-└── Batch 2 (parallel): Tasks 4, 5, 6 -> depend on batch 1
-    ├── [inject Batch 1 Handoff into implementer prompts]
-    └── [same pattern]
+while not complete:
+    # Get unblocked tasks from Beads
+    ready_tasks = bd ready --epic <epic-id>
+
+    if no ready_tasks:
+        all_status = bd show <epic-id> --json
+        if all tasks closed: break with success
+        else: report blocked tasks, break
+
+    # Spawn implementers in parallel (one per ready task)
+    for task in ready_tasks:
+        Task("implementer: Execute task
+        Plan: <plan-path>
+        Task: <task-number>
+        Beads ID: <beads-task-id>
+        Previous Handoff: <if applicable>")
+
+    # Wait for batch to complete
+    # Write batch handoff document
+
+    # Check context threshold
+    if context_usage > 70%:
+        write final handoff with epic ID and remaining tasks
+        break
 ```
+
+## Context Threshold
+
+Stop execution at **70% context usage** to preserve room for:
+- Final handoff generation
+- Ledger updates
+- Clean exit with resumption info
+
+Check context after each batch completes. If exceeded:
+1. Write handoff with epic ID and progress
+2. Exit cleanly
+3. Next session resumes with `bd ready --epic <epic-id>`
 
 ## Per-Task Cycle
 
 For each task:
-1. Spawn implementer with task details
+1. Spawn implementer with task details AND Beads ID
 2. Wait for implementer to complete
 3. **Display implementer summary** (changes made, files modified)
 4. Spawn reviewer to check that task
 5. **Display reviewer verdict** (approved/changes requested, key findings)
 6. If reviewer requests changes: re-spawn implementer for fixes
 7. Max 3 cycles per task before marking as blocked
-8. Report task status: DONE / BLOCKED
+8. **On success:** Implementer closes Beads issue (`bd done <id>`), unblocking dependents
+9. **On failure:** Beads issue stays open, blocking dependent tasks
+10. Report task status: DONE / BLOCKED
 
 ## Displaying Progress
 
@@ -105,13 +132,14 @@ This keeps the user informed without them needing to dig into agent outputs.
 
 ## Parallel Spawning
 
-Within a batch, spawn ALL implementers in a SINGLE message. Pass the **plan file path** so implementers can read it themselves (saves tokens):
+Within a batch, spawn ALL implementers in a SINGLE message. Pass the **plan file path** and **Beads ID** so implementers can read the plan and close their issue on completion:
 
 ```
 Task("implementer: Execute Task 1 from plan.
 
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
 Task: 1
+Beads ID: bd-a1b2.1
 Previous Handoff: thoughts/shared/handoffs/2025-01-15-feature-name-batch-1.md (if applicable)
 ")
 ```
@@ -260,30 +288,28 @@ Task("implementer: Execute task 4: [details]
 ## Execution Complete
 
 **Plan**: [plan file path]
+**Epic**: [beads epic ID, e.g., bd-a1b2]
 **Total tasks**: [N]
-**Batches**: [M] (based on dependency analysis)
-
-### Dependency Analysis
-- Batch 1 (parallel): Tasks 1, 2, 3 - independent, no shared files
-- Batch 2 (parallel): Tasks 4, 5 - depend on batch 1
-- Batch 3 (sequential): Task 6 - depends on task 5 specifically
+**Batches**: [M]
 
 ### Results
 
-| Task | Status | Cycles | Notes |
-|------|--------|--------|-------|
-| 1 | DONE | 1 | |
-| 2 | DONE | 2 | Fixed type error on cycle 2 |
-| 3 | BLOCKED | 3 | Could not resolve: [issue] |
+| Task | Beads ID | Status | Cycles | Notes |
+|------|----------|--------|--------|-------|
+| 1 | bd-a1b2.1 | DONE | 1 | |
+| 2 | bd-a1b2.2 | DONE | 2 | Fixed type error on cycle 2 |
+| 3 | bd-a1b2.3 | BLOCKED | 3 | Could not resolve: [issue] |
 
 ### Summary
 - Completed: [X]/[N] tasks
-- Blocked: [Y] tasks need human intervention
+- Blocked: [Y] tasks (still open in Beads, blocking dependents)
+- Context used: [percentage]
 
 ### Blocked Tasks (if any)
-**Task 3**: [description of blocker and last reviewer feedback]
+**Task 3** (bd-a1b2.3): [description of blocker and last reviewer feedback]
 
-**Next**: [Ready to commit / Needs human decision on blocked tasks]
+### Resumption
+To continue: `bd ready --epic bd-a1b2` shows remaining unblocked tasks.
 ```
 
 ## Plan Lifecycle
@@ -328,10 +354,12 @@ Plans contain an executor status block that only the executor should update:
 ## Never Do
 
 - **Skip plan activation** - MUST move pending → active before executing
+- **Skip beads-sync** - MUST sync plan to Beads before executing tasks
 - **Skip plan completion** - MUST move active → done (or update progress if blocked)
 - **Skip batch handoffs** - MUST write handoff to `thoughts/shared/handoffs/` after each batch
-- Skip dependency analysis
-- Spawn dependent tasks in parallel
+- **Pause to ask user how to proceed** - plan defines the work, execute it
+- **Manually determine dependencies** - Beads handles this via phase dependencies
 - Skip reviewer for any task
 - Continue past 3 cycles for a single task
 - Report success if any task is blocked
+- Continue past 70% context without writing handoff
