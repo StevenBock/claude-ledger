@@ -1,6 +1,37 @@
 // hooks/src/ledger-loader.ts
 import * as fs from "fs";
 import * as path from "path";
+function pruneLedger(ledgerPath, config = { maxAgentReports: 10, removeSessionEnded: true }) {
+  let content = fs.readFileSync(ledgerPath, "utf-8");
+  const originalLength = content.length;
+  if (config.removeSessionEnded) {
+    content = content.replace(
+      /### Session Ended.*?\n[\s\S]*?(?=###|## |$)/g,
+      ""
+    );
+  }
+  const agentReportsMatch = content.match(
+    /## Agent Reports\n([\s\S]*?)(?=\n## |$)/
+  );
+  if (agentReportsMatch) {
+    const reportsSection = agentReportsMatch[1];
+    const reports = reportsSection.split(/(?=### )/).filter((r) => r.trim());
+    if (reports.length > config.maxAgentReports) {
+      const kept = reports.slice(-config.maxAgentReports).join("");
+      content = content.replace(
+        agentReportsMatch[0],
+        `## Agent Reports
+${kept}`
+      );
+    }
+  }
+  if (content.length !== originalLength) {
+    fs.writeFileSync(ledgerPath, content);
+    console.error(
+      `[ledger-loader] Pruned ledger: ${originalLength} \u2192 ${content.length} bytes`
+    );
+  }
+}
 async function readStdin() {
   return new Promise((resolve) => {
     let data = "";
@@ -47,13 +78,19 @@ async function main() {
     console.log(JSON.stringify({ result: "continue" }));
     return;
   }
-  const ledger = findMostRecentLedger(projectDir);
+  let ledger = findMostRecentLedger(projectDir);
   if (!ledger) {
     const output2 = {
       result: "continue",
       message: "No ledger found. Run /ledger to track session state."
     };
     console.log(JSON.stringify(output2));
+    return;
+  }
+  pruneLedger(ledger.filePath);
+  ledger = findMostRecentLedger(projectDir);
+  if (!ledger) {
+    console.log(JSON.stringify({ result: "continue" }));
     return;
   }
   const output = {

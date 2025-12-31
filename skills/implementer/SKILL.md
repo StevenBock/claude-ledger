@@ -69,7 +69,38 @@ After successful implementation and all verifications pass:
    ```
    This unblocks dependent tasks in subsequent phases.
 
-3. Return result to executor with Beads status.
+3. **Write task handoff file:**
+
+   Create: `thoughts/shared/handoffs/{plan-name}/task-{N}.md`
+
+   ```markdown
+   # Task {N} Handoff: {task description}
+   Status: Complete
+   Beads: {beads-id}
+   Timestamp: {ISO timestamp}
+
+   ## What Was Done
+   {Brief summary of implementation}
+
+   ## Files Modified
+   - `path/file.ts:line` - [Created/Modified] - [purpose]
+
+   ## API Contracts / Interfaces
+   {Any new interfaces, types, or contracts created}
+
+   ## Key Decisions
+   - {decision}: {rationale}
+
+   ## Gotchas for Subsequent Tasks
+   - {Issue to be aware of}
+
+   ## Next Task Should Know
+   {Critical context for task N+1}
+   ```
+
+   The handoff file enables subsequent tasks to understand what was done.
+
+4. Return result to executor with Beads status.
 
 **Important:** Only close the issue if implementation is complete and verified. Failed tasks must leave the issue open to block dependents.
 
@@ -79,16 +110,18 @@ You will receive file paths (read them yourself to save tokens):
 1. **Plan** - Path to the plan file (e.g., `thoughts/shared/plans/active/...`)
 2. **Task** - Task number to execute from the plan
 3. **Beads ID** - Beads issue ID for this task (e.g., `bd-a1b2.3`)
-4. **Previous Handoff** (if applicable) - Path to handoff from earlier batch
-5. **Patterns** (optional) - Path to patterns file (e.g., `thoughts/shared/patterns/YYYY-MM-DD-{topic}-patterns.md`)
+4. **Previous Batch Handoff** (if applicable) - Path to batch handoff from earlier batch
+5. **Previous Task Handoff** (if applicable) - Path to handoff from immediately preceding task (e.g., `thoughts/shared/handoffs/{plan}/task-{N-1}.md`)
+6. **Patterns** (optional) - Path to patterns file (e.g., `thoughts/shared/patterns/YYYY-MM-DD-{topic}-patterns.md`)
 
 ## First Steps
 
 1. Read the plan file using the Read tool
 2. Find your assigned task number in the plan
-3. Read the previous handoff file if provided
-4. If patterns path provided, read the patterns file using the Read tool
-5. Then proceed with implementation
+3. Read the previous batch handoff file if provided
+4. Read the previous task handoff file if provided (task-{N-1}.md)
+5. If patterns path provided, read the patterns file using the Read tool
+6. Then proceed with implementation
 
 Use the plan to understand:
 - Overall goal and architecture
@@ -96,11 +129,15 @@ Use the plan to understand:
 - Dependencies between tasks
 - Exact file paths, code examples, and verification steps
 
-Use the handoff (if provided) to understand:
-- What was already implemented
+Use the batch handoff (if provided) to understand:
+- What was implemented in the previous batch
+- Overall progress so far
+
+Use the task handoff (if provided) to understand:
+- What the immediately preceding task implemented
 - Files that were created/modified
 - API contracts or interfaces to consume
-- Gotchas from previous tasks
+- Gotchas specific to your task
 
 ### Pattern Compliance
 

@@ -242,6 +242,7 @@ Within a batch (max 4 tasks), spawn ALL implementers in a SINGLE message using *
 **Example - spawn 4 implementers in parallel:**
 ```
 # ALL of these in ONE message - they run in parallel, return together
+# Note: Each task gets previous task handoff path for chaining
 Task("implementer: Execute Task 1 from plan.
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
 Patterns: thoughts/shared/patterns/2025-01-15-feature-name-patterns.md
@@ -252,20 +253,23 @@ Task("implementer: Execute Task 2 from plan.
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
 Patterns: thoughts/shared/patterns/2025-01-15-feature-name-patterns.md
 Task: 2
-Beads ID: bd-a1b2.2")
+Beads ID: bd-a1b2.2
+Previous Task Handoff: thoughts/shared/handoffs/2025-01-15-feature-name/task-1.md")
 
 Task("implementer: Execute Task 3 from plan.
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
 Patterns: thoughts/shared/patterns/2025-01-15-feature-name-patterns.md
 Task: 3
-Beads ID: bd-a1b2.3")
+Beads ID: bd-a1b2.3
+Previous Task Handoff: thoughts/shared/handoffs/2025-01-15-feature-name/task-2.md")
 
 Task("implementer: Execute Task 4 from plan.
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
 Patterns: thoughts/shared/patterns/2025-01-15-feature-name-patterns.md
 Task: 4
 Beads ID: bd-a1b2.4
-Previous Handoff: thoughts/shared/handoffs/2025-01-15-feature-name-batch-1.md")
+Previous Task Handoff: thoughts/shared/handoffs/2025-01-15-feature-name/task-3.md
+Previous Batch Handoff: thoughts/shared/handoffs/2025-01-15-feature-name-batch-1.md")
 ```
 
 **NEVER use `run_in_background: true`** - it requires TaskOutput polling which explodes context usage.
@@ -396,15 +400,25 @@ Date: YYYY-MM-DD
 
 ## Context Injection
 
-When spawning implementers for batch N+1, include previous handoff:
+### Batch Handoff (across batches)
+When spawning implementers for batch N+1, include previous batch handoff path:
 
 ```
 Task("implementer: Execute task 4: [details]
-
-## Previous Batch Context
-[Contents of batch N handoff]
+Previous Batch Handoff: thoughts/shared/handoffs/2025-01-15-feature-name-batch-1.md
 ")
 ```
+
+### Task Handoff (within/across batches)
+For tasks after the first, include the previous task's handoff path:
+
+```
+Task("implementer: Execute task 2: [details]
+Previous Task Handoff: thoughts/shared/handoffs/2025-01-15-feature-name/task-1.md
+")
+```
+
+This creates a chain where each implementer can see what the previous task did, enabling better coordination and context sharing.
 
 ## Rules
 

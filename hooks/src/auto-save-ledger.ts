@@ -1,9 +1,11 @@
 import * as fs from "fs";
 import * as path from "path";
+import { parseTranscript, generateAutoHandoff } from "./transcript-parser.js";
 
 interface PreCompactInput {
   trigger: "auto" | "manual";
   session_id: string;
+  transcript_path?: string;
 }
 
 interface HookOutput {
@@ -233,6 +235,45 @@ function clearDecisions(projectDir: string, sessionId: string): void {
   }
 }
 
+function extractSessionName(ledgerPath: string): string {
+  const filename = path.basename(ledgerPath);
+  return filename.replace("CONTINUITY_", "").replace(".md", "");
+}
+
+function generateComprehensiveHandoff(
+  projectDir: string,
+  transcriptPath: string,
+  sessionName: string
+): string | null {
+  try {
+    const summary = parseTranscript(transcriptPath);
+    const handoffContent = generateAutoHandoff(summary, sessionName);
+
+    const handoffDir = path.join(
+      projectDir,
+      "thoughts",
+      "shared",
+      "handoffs",
+      sessionName
+    );
+    fs.mkdirSync(handoffDir, { recursive: true });
+
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[:.]/g, "-")
+      .slice(0, 19);
+    const handoffFile = `auto-handoff-${timestamp}.md`;
+    const handoffPath = path.join(handoffDir, handoffFile);
+
+    fs.writeFileSync(handoffPath, handoffContent);
+
+    return `thoughts/shared/handoffs/${sessionName}/${handoffFile}`;
+  } catch (e) {
+    console.error("Failed to generate auto-handoff:", e);
+    return null;
+  }
+}
+
 async function main() {
   const input: PreCompactInput = JSON.parse(await readStdin());
   const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
@@ -257,9 +298,24 @@ async function main() {
   clearFileOps(projectDir, input.session_id);
   clearDecisions(projectDir, input.session_id);
 
+  let handoffPath: string | null = null;
+  if (input.trigger === "auto" && input.transcript_path) {
+    const sessionName = extractSessionName(ledgerPath);
+    handoffPath = generateComprehensiveHandoff(
+      projectDir,
+      input.transcript_path,
+      sessionName
+    );
+  }
+
+  let message = `[PreCompact] Ledger updated. State saved to ${path.basename(ledgerPath)}.`;
+  if (handoffPath) {
+    message += ` Auto-handoff: ${handoffPath}`;
+  }
+
   const output: HookOutput = {
     continue: true,
-    systemMessage: `[PreCompact] Ledger updated with file operations. State saved to ${path.basename(ledgerPath)}.`,
+    systemMessage: message,
   };
   console.log(JSON.stringify(output));
 }
