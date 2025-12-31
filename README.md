@@ -66,16 +66,15 @@ flowchart LR
 ```mermaid
 flowchart LR
     A[Plan] --> B[beads-sync]
-    B --> C{Tasks by Phase}
-    C --> D1[implementer]
-    C --> D2[implementer]
-    C --> D3[implementer]
+    B --> X[executor]
+    X -->|spawns| D1[implementer]
+    X -->|spawns| D2[implementer]
+    X -->|spawns| D3[implementer]
     D1 --> R1[reviewer]
     D2 --> R2[reviewer]
     D3 --> R3[reviewer]
-    R1 & R2 & R3 --> E{Next Phase?}
-    E -->|Yes| C
-    E -->|No| F[Done]
+    R1 & R2 & R3 --> X
+    X -->|all done| F[Done]
 ```
 
 Research skills (codebase-locator, codebase-analyzer, pattern-finder) are spawned within brainstorm and plan phases.
