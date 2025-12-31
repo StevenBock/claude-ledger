@@ -23,6 +23,9 @@ function isArtifact(filePath: string): { type: "ledger" | "plan" } | null {
   if (filePath.includes("thoughts/shared/plans/") && filePath.endsWith(".md")) {
     return { type: "plan" };
   }
+  if (filePath.includes("thoughts/shared/retros/") && filePath.endsWith(".md")) {
+    return { type: "plan" };
+  }
   return null;
 }
 

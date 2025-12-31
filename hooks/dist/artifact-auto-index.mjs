@@ -15,6 +15,9 @@ function isArtifact(filePath) {
   if (filePath.includes("thoughts/shared/plans/") && filePath.endsWith(".md")) {
     return { type: "plan" };
   }
+  if (filePath.includes("thoughts/shared/retros/") && filePath.endsWith(".md")) {
+    return { type: "plan" };
+  }
   return null;
 }
 function extractMetadata(filePath, type) {

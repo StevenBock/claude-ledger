@@ -370,6 +370,9 @@ function detectArtifactType(filePath) {
   if (filePath.includes("thoughts/shared/patterns/") && filePath.endsWith(".md")) {
     return "plan";
   }
+  if (filePath.includes("thoughts/shared/retros/") && filePath.endsWith(".md")) {
+    return "plan";
+  }
   return null;
 }
 server.setRequestHandler(CallToolRequestSchema, async (request) => {

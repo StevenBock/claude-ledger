@@ -132,6 +132,9 @@ function detectArtifactType(filePath: string): "plan" | "ledger" | null {
   if (filePath.includes("thoughts/shared/patterns/") && filePath.endsWith(".md")) {
     return "plan";
   }
+  if (filePath.includes("thoughts/shared/retros/") && filePath.endsWith(".md")) {
+    return "plan";
+  }
   return null;
 }
 
