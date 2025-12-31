@@ -9,13 +9,20 @@ claudeledger is a Claude Code plugin providing a structured **Brainstorm → Pla
 ## Build Commands
 
 ```bash
-npm install              # Install dependencies (auto-runs postinstall for servers/artifact-index)
+npm install              # Install deps (auto-runs postinstall for servers/artifact-index)
 npm run build            # Build hooks and MCP server
-npm run build:hooks      # Build only hooks (esbuild → hooks/dist/)
-npm run build:server     # Build only artifact-index server (esbuild → servers/artifact-index/dist/)
-npm run typecheck        # Type check hooks
+npm run build:hooks      # Build only hooks (esbuild → hooks/dist/*.mjs)
+npm run build:server     # Build only artifact-index server (esbuild → servers/artifact-index/dist/server.mjs)
+npm run typecheck        # Type check hooks (no emit)
 npm run clean            # Remove dist directories
 ```
+
+## Development Workflow
+
+After modifying hooks or MCP server:
+1. Run `npm run build` to rebuild
+2. Restart Claude Code to pick up hook/MCP changes
+3. Shell hooks (.sh) don't require rebuild, but TypeScript hooks (.ts → .mjs) do
 
 ## Architecture
 
@@ -59,19 +66,28 @@ Skills spawn research subagents (codebase-locator, codebase-analyzer, pattern-fi
 - `/search`: Searches artifact-index for past plans and ledgers
 
 ### Hooks (hooks/hooks.json)
-| Event | Matcher | Hook |
-|-------|---------|------|
-| SessionStart | resume\|compact\|clear | ledger-loader, context-injector |
-| PostToolUse | Read\|Edit\|Write | file-ops-tracker |
-| PostToolUse | Write | artifact-auto-index |
-| PostToolUse | Edit | comment-checker |
-| PostToolUse | ExitPlanMode | plan-copier (copies plan to pending/) |
-| PreCompact | * | auto-save-ledger |
+| Event | Matcher | Hook | Notes |
+|-------|---------|------|-------|
+| SessionStart | resume\|compact\|clear | ledger-loader | Loads most recent CONTINUITY_*.md |
+| SessionStart | resume\|compact\|clear | context-injector | Injects additional context |
+| PostToolUse | Read\|Edit\|Write | file-ops-tracker | Tracks file operations for ledger |
+| PostToolUse | Write | artifact-auto-index | Auto-indexes new plans/ledgers |
+| PostToolUse | Edit | comment-checker | Checks for inline comments |
+| PostToolUse | ExitPlanMode | plan-copier | Copies plan to pending/ |
+| PreCompact | * | auto-save-ledger | Saves ledger before compaction |
+
+**Hook Implementation Pattern**: Shell scripts (.sh) call TypeScript (.ts → .mjs via esbuild). Hooks receive JSON on stdin, output JSON with `result: "continue"` and optional `hookSpecificOutput.additionalContext`.
 
 ### MCP Server (servers/artifact-index/)
-SQLite-backed full-text search across plans and ledgers. Tools: `artifact_search`, `artifact_index`, `artifact_list`.
+SQLite-backed full-text search across plans and ledgers using FTS5.
 
-Database location: `~/.config/claude-code/artifact-index/context.db`
+**Tools**: `artifact_search`, `artifact_index`, `artifact_list`
+**Database**: `~/.config/claude-code/artifact-index/context.db`
+**Run manually**: `npm run server:artifact-index`
+
+Artifact detection (in `servers/artifact-index/src/server.ts:122-133`):
+- Plans: `thoughts/shared/plans/**/*.md` or `thoughts/shared/designs/**/*.md`
+- Ledgers: `thoughts/ledgers/CONTINUITY_*.md`
 
 ## Artifact Locations
 - Designs: `thoughts/shared/designs/YYYY-MM-DD-{topic}-design.md`
@@ -108,3 +124,30 @@ Skills spawn research subagents in parallel using Task tool in a SINGLE message 
 
 ### Ledger Format
 Used for session continuity across `/clear` or context compaction. Contains: Goal, Constraints, Progress (Done/In Progress/Blocked), Key Decisions, Next Steps, File Operations, Working Set.
+
+## Adding New Components
+
+### New Skill
+1. Create `skills/{skill-name}/SKILL.md` with frontmatter:
+   ```yaml
+   ---
+   name: skill-name
+   description: One-line for skill discovery
+   ---
+   ```
+2. Skills auto-discovered via `.claude-plugin/plugin.json` → `skills: "./skills/"`
+
+### New Command
+1. Create `commands/{command}.md` with frontmatter:
+   ```yaml
+   ---
+   description: One-line for /help
+   argument-hint: [optional arg format]
+   ---
+   ```
+2. Commands auto-discovered via `.claude-plugin/plugin.json` → `commands: "./commands/"`
+
+### New Hook
+1. Add entry to `hooks/hooks.json` under appropriate event
+2. Create shell script in `hooks/` that calls TypeScript if needed
+3. If TypeScript needed: create in `hooks/src/`, run `npm run build:hooks`
