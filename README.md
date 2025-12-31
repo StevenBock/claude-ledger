@@ -1,4 +1,4 @@
-# claudeledger
+# claude-ledger
 
 Structured **Brainstorm → Plan → Implement** workflow with session continuity.
 
@@ -7,14 +7,14 @@ Structured **Brainstorm → Plan → Implement** workflow with session continuit
 ### From Marketplace
 
 ```bash
-claude plugin install claudeledger
+claude plugin install claude-ledger
 ```
 
 ### From Source
 
 ```bash
-git clone https://github.com/StevenBock/claudeledger.git ~/.claude/plugins/claudeledger
-cd ~/.claude/plugins/claudeledger
+git clone https://github.com/StevenBock/claude-ledger.git ~/.claude/plugins/claude-ledger
+cd ~/.claude/plugins/claude-ledger
 npm install
 npm run build
 ```
@@ -23,7 +23,7 @@ Then add to your settings:
 
 ```json
 {
-  "plugins": ["~/.claude/plugins/claudeledger"]
+  "plugins": ["~/.claude/plugins/claude-ledger"]
 }
 ```
 
@@ -32,7 +32,9 @@ Then add to your settings:
 ```
 Brainstorm → Plan → Implement
      ↓         ↓        ↓
-  research  research  executor
+  research  research  executor → beads-sync
+                         ↓
+                    implementer → reviewer
 ```
 
 Research skills (codebase-locator, codebase-analyzer, pattern-finder) are spawned within brainstorm and plan phases.
@@ -59,16 +61,15 @@ Transform validated designs into comprehensive implementation plans.
 
 ### 3. Implement
 
-Execute plan with intelligent parallelization:
+Execute plan with Beads-integrated parallel execution:
 
 - Moves plan from `pending/` → `active/` → `done/`
-- Analyzes task dependencies
-- Batches independent tasks for parallel execution
+- Syncs tasks to Beads for dependency tracking
+- Executes tasks in parallel (MAX_PARALLEL=4) using blocking mode
 - Per-task implementer → reviewer cycle
-- Updates embedded executor status block in plan
-- Generates batch handoff documents for context continuity
+- Updates Beads status as tasks complete
 - Max 3 cycles per task before blocking
-- Output: `thoughts/shared/handoffs/YYYY-MM-DD-{plan}-batch-{N}.md`
+- Output: Beads epic with task status
 
 ### 4. Session Continuity
 
@@ -87,15 +88,32 @@ Creates/updates `thoughts/ledgers/CONTINUITY_{session-name}.md` with:
 
 The ledger is automatically injected on `/clear`, `/resume`, or context compaction.
 
+### 5. Handoffs
+
+Generate git-aware handoff documents for session transitions:
+
+```
+/handoff [name]
+```
+
+Creates `thoughts/shared/handoffs/YYYY-MM-DD-{name}.md` with:
+- Git commits since session start
+- Files changed (added/modified/deleted)
+- Uncommitted changes
+- Session context from ledger
+
 ## Commands
 
 | Command | Description |
 |---------|-------------|
 | `/brainstorm` | Refine ideas into designs through collaborative questioning |
 | `/planner` | Create detailed implementation plan from a validated design |
+| `/approve` | Save plan to thoughts folder and start executor |
+| `/save-plan` | Save plan to thoughts folder without executing |
 | `/execute` | Execute an implementation plan with parallel task batching |
 | `/plans [n\|active\|done\|all]` | List plans or execute plan #n from pending |
 | `/ledger` | Create or update continuity ledger |
+| `/handoff [name]` | Generate handoff document with git changes |
 | `/search` | Search past plans and ledgers |
 
 ## Skills
@@ -104,7 +122,8 @@ The ledger is automatically injected on `/clear`, `/resume`, or context compacti
 |-------|---------|
 | `brainstorm` | Design exploration through questioning |
 | `planner` | Create detailed implementation plans |
-| `executor` | Execute plan with parallel batching |
+| `executor` | Execute plan with Beads-integrated parallel batching |
+| `beads-sync` | Convert plan file to Beads dependency graph |
 | `implementer` | Execute single task from plan |
 | `reviewer` | Review implementation correctness |
 | `codebase-locator` | Find WHERE files are |
@@ -115,13 +134,17 @@ The ledger is automatically injected on `/clear`, `/resume`, or context compacti
 
 | Hook | Event | Description |
 |------|-------|-------------|
+| git-snapshot-capture | SessionStart | Capture git state for handoffs |
 | ledger-loader | SessionStart | Inject ledger on resume/clear/compact |
-| context-injector | SessionStart | Inject .cursorrules if present |
+| context-injector | SessionStart | Inject additional context |
+| batch-handoff-enforcer | PreToolUse (Task) | Block batch N+1 until batch N handoff exists |
 | file-ops-tracker | PostToolUse | Track read/write operations |
+| plan-lifecycle | PostToolUse (Read/Edit) | Auto-move plans pending→active→done |
 | comment-checker | PostToolUse (Edit) | Warn about unnecessary comments |
 | artifact-auto-index | PostToolUse (Write) | Index plans and ledgers |
 | plan-copier | PostToolUse (ExitPlanMode) | Copy plan to pending/ folder |
-| auto-save-ledger | PreCompact | Save file ops to ledger before compact |
+| decision-capture | PostToolUse (AskUserQuestion) | Capture decisions to decisions.json |
+| auto-save-ledger | PreCompact | Save file ops + decisions before compact |
 
 ## MCP Servers
 
@@ -143,26 +166,30 @@ Database stored at: `~/.config/claude-code/artifact-index/context.db`
 ## Structure
 
 ```
-claudeledger/
+claude-ledger/
 ├── .claude-plugin/
 │   └── plugin.json         # Plugin manifest
 ├── .mcp.json               # MCP server config
 ├── commands/               # Slash commands
+│   ├── approve.md
 │   ├── brainstorm.md
-│   ├── planner.md
 │   ├── execute.md
-│   ├── plans.md
+│   ├── handoff.md
 │   ├── ledger.md
+│   ├── planner.md
+│   ├── plans.md
+│   ├── save-plan.md
 │   └── search.md
 ├── skills/                 # Agent skills
+│   ├── beads-sync/
 │   ├── brainstorm/
-│   ├── planner/
+│   ├── codebase-analyzer/
+│   ├── codebase-locator/
 │   ├── executor/
 │   ├── implementer/
-│   ├── reviewer/
-│   ├── codebase-locator/
-│   ├── codebase-analyzer/
-│   └── pattern-finder/
+│   ├── pattern-finder/
+│   ├── planner/
+│   └── reviewer/
 ├── hooks/                  # Event hooks
 │   ├── hooks.json
 │   ├── src/               # TypeScript sources

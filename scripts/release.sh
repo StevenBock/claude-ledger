@@ -37,4 +37,4 @@ echo "Released version $NEW_VERSION"
 
 # Update the installed plugin
 echo "Updating installed plugin..."
-claude plugin update claudeledger 2>/dev/null && echo "Plugin updated. Restart Claude Code to apply." || echo "Plugin update skipped (not installed or error)"
+claude plugin update claude-ledger 2>/dev/null && echo "Plugin updated. Restart Claude Code to apply." || echo "Plugin update skipped (not installed or error)"

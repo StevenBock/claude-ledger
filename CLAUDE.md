@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-claudeledger is a Claude Code plugin providing a structured **Brainstorm → Plan → Implement** workflow with session continuity. It includes skills, commands, hooks, and an MCP server for artifact indexing.
+claude-ledger is a Claude Code plugin providing a structured **Brainstorm → Plan → Implement** workflow with session continuity. It includes skills, commands, hooks, and an MCP server for artifact indexing.
 
 ## Build Commands
 
@@ -52,7 +52,8 @@ thoughts/                   # Runtime artifacts (ledgers, designs, plans) - giti
 ```
 
 ### Skills (skills/*/SKILL.md)
-- **executor**: Parallel task execution with dependency analysis, spawns implementer/reviewer
+- **executor**: Beads-integrated parallel task execution (MAX_PARALLEL=4), spawns implementer/reviewer
+- **beads-sync**: Converts plan file to Beads dependency graph, spawned by executor
 - **implementer**: Executes single task from plan, TDD workflow
 - **reviewer**: Verifies correctness against plan, runs tests
 - **brainstorm**: Design exploration via collaborative questioning
@@ -65,9 +66,11 @@ thoughts/                   # Runtime artifacts (ledgers, designs, plans) - giti
 - `/brainstorm`: Refine ideas into designs through collaborative questioning
 - `/planner`: Create detailed implementation plan from a validated design
 - `/approve`: Save plan to thoughts folder and start executor (use after plan mode)
+- `/save-plan`: Save plan to thoughts folder without executing
 - `/execute`: Run an implementation plan with parallel task batching
 - `/plans [n|active|done|all]`: List plans or execute plan #n from pending
 - `/ledger`: Creates/updates continuity ledger in `thoughts/ledgers/CONTINUITY_{session}.md`
+- `/handoff [name]`: Generate handoff document with git changes since session start
 - `/search`: Searches artifact-index for past plans and ledgers
 
 ### Hooks (hooks/hooks.json)
@@ -105,7 +108,7 @@ Artifact detection (in `servers/artifact-index/src/server.ts:122-133`):
 ## Artifact Locations
 - Designs: `thoughts/shared/designs/YYYY-MM-DD-{topic}-design.md`
 - Plans (lifecycle): `thoughts/shared/plans/{pending|active|done}/YYYY-MM-DD-{topic}.md`
-- Handoffs: `thoughts/shared/handoffs/YYYY-MM-DD-{plan-name}-batch-{N}.md`
+- Handoffs: `thoughts/shared/handoffs/YYYY-MM-DD-{name}.md`
 - Ledgers: `thoughts/ledgers/CONTINUITY_{session-name}.md`
 
 ## Plan Lifecycle
@@ -120,6 +123,13 @@ pending/ → active/ → done/
 
 ### Skill Spawning
 Skills spawn subagents in parallel using Task tool in a SINGLE message for true parallelism.
+
+### Beads Integration
+Executor syncs plan tasks to Beads for dependency tracking:
+1. beads-sync parses plan phases/tasks into Beads epic
+2. Phase-based dependencies set automatically
+3. Task status updated in Beads as execution proceeds
+4. Enables parallel execution of independent tasks
 
 ### TDD Workflow (Planner/Implementer)
 1. Write failing test

@@ -1,11 +1,11 @@
 {
-  "name": "claudeledger-marketplace",
+  "name": "claude-ledger-marketplace",
   "owner": {
     "name": "StevenBock"
   },
   "plugins": [
     {
-      "name": "claudeledger",
+      "name": "claude-ledger",
       "source": "./",
       "description": "Structured Brainstorm → Plan → Implement workflow with session continuity",
       "version": "1.0.41",

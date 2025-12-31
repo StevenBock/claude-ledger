@@ -1,5 +1,5 @@
 {
-  "description": "claudeledger hooks for session continuity and workflow automation",
+  "description": "claude-ledger hooks for session continuity and workflow automation",
   "hooks": {
     "SessionStart": [
       {
