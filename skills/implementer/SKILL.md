@@ -48,7 +48,18 @@ Execute the plan. Write code. Verify.
 
 ## Input
 
-May receive a **previous batch handoff** as context. Use it to understand:
+You will receive:
+1. **Full Plan** - The complete implementation plan with all tasks
+2. **Your Task** - The specific task you should execute
+3. **Previous Batch Handoff** (if applicable) - Context from earlier batches
+
+Use the full plan to understand:
+- Overall goal and architecture
+- How your task fits into the bigger picture
+- Dependencies between tasks
+- Exact file paths, code examples, and verification steps
+
+Use the handoff (if provided) to understand:
 - What was already implemented
 - Files that were created/modified
 - API contracts or interfaces to consume

@@ -81,19 +81,34 @@ For each task:
 
 ## Parallel Spawning
 
-Within a batch, spawn ALL implementers in a SINGLE message:
+Within a batch, spawn ALL implementers in a SINGLE message. **ALWAYS include the full plan** so implementers have complete context:
 
 ```
-Task("implementer: Execute task 1: [details]")
-Task("implementer: Execute task 2: [details]")
-Task("implementer: Execute task 3: [details]")
+Task("implementer: Execute task 1 from the following plan:
+
+## Full Plan
+[PASTE ENTIRE PLAN CONTENT HERE]
+
+## Your Task
+Task 1: [task details from plan]
+
+## Previous Batch Context (if applicable)
+[handoff from previous batch]
+")
 ```
 
-Then after all complete, in ONE message spawn:
+Repeat for each task in the batch, all in ONE message for parallel execution.
+
+Then after all complete, in ONE message spawn reviewers:
 ```
-Task("reviewer: Review task 1 implementation")
-Task("reviewer: Review task 2 implementation")
-Task("reviewer: Review task 3 implementation")
+Task("reviewer: Review task 1 implementation against this plan:
+
+## Full Plan
+[PASTE ENTIRE PLAN CONTENT HERE]
+
+## Task to Review
+Task 1: [task details]
+")
 ```
 
 ## Batch Handoff Generation
