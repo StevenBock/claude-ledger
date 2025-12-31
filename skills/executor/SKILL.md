@@ -5,9 +5,21 @@ description: Executes plan tasks with parallel execution where possible. Use whe
 
 # Executor
 
-Execute plan tasks with maximum parallelism.
+Execute plan tasks with efficient parallel batching.
 Each task gets its own implementer -> reviewer cycle.
 Detect and parallelize independent tasks.
+
+## Parallel Execution Strategy
+
+**MAX_PARALLEL = 4**: Never spawn more than 4 agents simultaneously.
+
+**Use blocking mode, NOT background tasks.** Multiple blocking Task calls in ONE message run in parallel but return in a single response - this minimizes context usage.
+
+Context comparison:
+- Blocking batch of 4: ~2 context entries (1 message + 1 response)
+- Background 4 + polling: 10-30+ context entries
+
+**Critical**: Spawn ALL tasks in a batch within a SINGLE message for true parallelism.
 
 ## When to Use
 
@@ -69,16 +81,27 @@ while not complete:
         if all tasks closed: break with success
         else: report blocked tasks, break
 
-    # Spawn implementers in parallel (one per ready task)
-    for task in ready_tasks:
-        Task("implementer: Execute task
-        Plan: <plan-path>
-        Task: <task-number>
-        Beads ID: <beads-task-id>
-        Previous Handoff: <if applicable>")
+    # Batch ready tasks into groups of MAX_PARALLEL (4)
+    batches = chunk(ready_tasks, 4)
 
-    # Wait for batch to complete
-    # Write batch handoff document
+    for batch in batches:
+        # Spawn implementers as BLOCKING calls in ONE message
+        # All tasks in the message run in parallel
+        # Response contains all results - minimal context usage
+
+        # Example: ONE message with 4 Task calls (no run_in_background!)
+        # Task("implementer: ...task 1...")
+        # Task("implementer: ...task 2...")
+        # Task("implementer: ...task 3...")
+        # Task("implementer: ...task 4...")
+        # → All 4 run parallel, ONE response with all results
+
+        # After batch completes, spawn reviewers same way
+        # Task("reviewer: ...task 1...")
+        # Task("reviewer: ...task 2...")
+        # etc.
+
+        # Write batch handoff document
 
     # Check context threshold
     if context_usage > 70%:
@@ -132,19 +155,40 @@ This keeps the user informed without them needing to dig into agent outputs.
 
 ## Parallel Spawning
 
-Within a batch, spawn ALL implementers in a SINGLE message. Pass the **plan file path** and **Beads ID** so implementers can read the plan and close their issue on completion:
+Within a batch (max 4 tasks), spawn ALL implementers in a SINGLE message using **blocking mode** (do NOT use `run_in_background`).
 
+**Why blocking mode?**
+- Multiple Task calls in ONE message = true parallel execution
+- Single response contains ALL results
+- No polling overhead = minimal context consumption
+- 4 parallel tasks costs ~2 context entries vs 10-30+ with background polling
+
+**Example - spawn 4 implementers in parallel:**
 ```
+# ALL of these in ONE message - they run in parallel, return together
 Task("implementer: Execute Task 1 from plan.
-
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
 Task: 1
-Beads ID: bd-a1b2.1
-Previous Handoff: thoughts/shared/handoffs/2025-01-15-feature-name-batch-1.md (if applicable)
-")
+Beads ID: bd-a1b2.1")
+
+Task("implementer: Execute Task 2 from plan.
+Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
+Task: 2
+Beads ID: bd-a1b2.2")
+
+Task("implementer: Execute Task 3 from plan.
+Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
+Task: 3
+Beads ID: bd-a1b2.3")
+
+Task("implementer: Execute Task 4 from plan.
+Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
+Task: 4
+Beads ID: bd-a1b2.4
+Previous Handoff: thoughts/shared/handoffs/2025-01-15-feature-name-batch-1.md")
 ```
 
-Repeat for each task in the batch, all in ONE message for parallel execution.
+**NEVER use `run_in_background: true`** - it requires TaskOutput polling which explodes context usage.
 
 ## Model Selection
 
@@ -180,13 +224,17 @@ Plan: thoughts/shared/plans/active/2025-01-15-feature.md
 Task: 2")
 ```
 
-Then after all complete, in ONE message spawn reviewers:
+Then after all implementers complete, spawn reviewers for that batch in ONE message (blocking mode):
 ```
 Task("reviewer: Review Task 1 implementation.
-
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
-Task: 1
-")
+Task: 1")
+
+Task("reviewer: Review Task 2 implementation.
+Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
+Task: 2")
+
+# ... up to 4 reviewers in parallel
 ```
 
 ### Reviewer Model Selection
@@ -276,6 +324,8 @@ Task("implementer: Execute task 4: [details]
 
 - Parse ALL tasks from plan before starting execution
 - ALWAYS analyze dependencies before parallelizing
+- **MAX_PARALLEL = 4** - never spawn more than 4 agents at once
+- **Use blocking mode** - do NOT use `run_in_background`
 - Spawn parallel tasks in SINGLE message for true parallelism
 - Wait for entire batch before starting next batch
 - Each task gets its own implement -> review cycle
@@ -353,6 +403,8 @@ Plans contain an executor status block that only the executor should update:
 
 ## Never Do
 
+- **Use `run_in_background: true`** - causes context explosion from polling; use blocking mode instead
+- **Spawn more than 4 agents at once** - MAX_PARALLEL = 4 to keep context manageable
 - **Skip plan activation** - MUST move pending → active before executing
 - **Skip beads-sync** - MUST sync plan to Beads before executing tasks
 - **Skip plan completion** - MUST move active → done (or update progress if blocked)
