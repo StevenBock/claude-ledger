@@ -23,6 +23,27 @@ The ledger captures essential context needed to resume work seamlessly after `/c
    - Key decisions made
    - Updated next steps
 
+## Population Instructions
+
+When creating or updating a ledger:
+
+### Decision History
+1. Check for `.claude/state/sessions/{sessionId}/decisions.json`
+2. If exists, parse and populate the Decision History table
+3. Each entry has: question, options, chosen, rationale
+4. Include all decisions from the JSON file
+
+### Active Context
+1. Check `thoughts/shared/plans/active/` for any active plan
+2. If found, link to the plan file and calculate task progress (done/total)
+3. Check if the active plan references a design file
+4. If design referenced, link to it in Design Reference section
+
+### Discovered Constraints
+1. Document non-obvious limitations found during implementation
+2. Include API limitations, library quirks, platform restrictions
+3. Note workarounds applied (if any)
+
 ## Output
 
 Writes to: `thoughts/ledgers/CONTINUITY_{session-name}.md`
@@ -39,6 +60,19 @@ Updated: {ISO timestamp}
 ## Constraints
 {Technical requirements, patterns to follow}
 
+## Discovered Constraints
+{Non-obvious limitations found during implementation}
+- **Constraint**: Why it matters
+- **Workaround**: How we addressed it (if applicable)
+
+## Active Context
+### Working Plan
+- File: `thoughts/shared/plans/active/{plan-name}.md`
+- Progress: X of Y tasks complete
+
+### Design Reference
+- File: `thoughts/shared/designs/{design-name}.md` (if applicable)
+
 ## Progress
 ### Done
 - [x] Completed items
@@ -51,6 +85,12 @@ Updated: {ISO timestamp}
 
 ## Key Decisions
 - **Decision**: Rationale
+
+## Decision History
+{Auto-populated from .claude/state/sessions/{sessionId}/decisions.json}
+| Question | Options | Chosen | Rationale |
+|----------|---------|--------|-----------|
+| {question} | {options} | {chosen} | {rationale} |
 
 ## Next Steps
 1. Ordered list

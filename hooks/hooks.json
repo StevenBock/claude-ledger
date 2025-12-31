@@ -28,6 +28,18 @@
         ]
       }
     ],
+    "PreToolUse": [
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/batch-handoff-enforcer.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Read|Edit|Write",
@@ -35,6 +47,16 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/file-ops-tracker.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/plan-lifecycle.sh",
             "timeout": 5
           }
         ]
@@ -66,6 +88,16 @@
             "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/plan-copier.mjs",
             "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/decision-capture.sh",
+            "timeout": 5
           }
         ]
       }

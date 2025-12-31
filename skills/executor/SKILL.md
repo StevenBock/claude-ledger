@@ -17,15 +17,26 @@ Detect and parallelize independent tasks.
 
 ## Workflow
 
+### FIRST: Activate Plan (MANDATORY)
+Before any task execution:
+1. Move plan file from `pending/` to `active/`
+2. Update status block: Status=`active`, Started=YYYY-MM-DD HH:MM
+
+### Execute Tasks
 1. Parse plan to extract individual tasks
 2. Analyze task dependencies to build execution graph
 3. Group tasks into parallel batches (independent tasks run together)
 4. For each batch:
    - Spawn implementer -> reviewer per task IN PARALLEL
    - Wait for batch to complete
-   - Generate batch handoff document
+   - **Generate batch handoff document** (MANDATORY - write to `thoughts/shared/handoffs/`)
 5. Pass previous batch handoff to next batch's implementers
 6. Aggregate results and report
+
+### LAST: Complete Plan (MANDATORY)
+After all tasks finish:
+1. If all tasks DONE: Move plan from `active/` to `done/`, update Status=`done`, Completed=YYYY-MM-DD HH:MM
+2. If any tasks BLOCKED: Keep in `active/`, update Progress to show completed count
 
 ## Dependency Analysis
 
@@ -254,6 +265,9 @@ Plans contain an executor status block that only the executor should update:
 
 ## Never Do
 
+- **Skip plan activation** - MUST move pending → active before executing
+- **Skip plan completion** - MUST move active → done (or update progress if blocked)
+- **Skip batch handoffs** - MUST write handoff to `thoughts/shared/handoffs/` after each batch
 - Skip dependency analysis
 - Spawn dependent tasks in parallel
 - Skip reviewer for any task
