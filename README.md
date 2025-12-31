@@ -30,51 +30,52 @@ Then add to your settings:
 ## Workflow
 
 ```mermaid
-flowchart TB
-    subgraph Brainstorm["/brainstorm"]
-        B1[Rough Idea] --> B2[Collaborative Questions]
-        B2 --> B3[Design Document]
-        B2 -.-> R1[codebase-locator]
-        B2 -.-> R2[codebase-analyzer]
-        B2 -.-> R3[pattern-finder]
+flowchart LR
+    subgraph Phase1 [" "]
+        direction TB
+        B["/brainstorm"]
+        B --> B1[Design Doc]
     end
 
-    subgraph Plan["/planner"]
-        P1[Validated Design] --> P2[Task Breakdown]
-        P2 --> P3[Implementation Plan]
-        P2 -.-> R4[codebase-locator]
-        P2 -.-> R5[pattern-finder]
+    subgraph Phase2 [" "]
+        direction TB
+        P["/planner"]
+        P --> P1[Plan File]
     end
 
-    subgraph Implement["/execute"]
-        E1[Plan File] --> E2[beads-sync]
-        E2 --> E3[Beads Epic]
-        E3 --> E4{Parallel Tasks}
-        E4 --> E5[implementer]
-        E4 --> E6[implementer]
-        E4 --> E7[implementer]
-        E5 --> E8[reviewer]
-        E6 --> E9[reviewer]
-        E7 --> E10[reviewer]
-        E8 & E9 & E10 --> E11{More Tasks?}
-        E11 -->|Yes| E4
-        E11 -->|No| E12[Done]
+    subgraph Phase3 [" "]
+        direction TB
+        E["/execute"]
+        E --> E1[beads-sync]
+        E1 --> E2[implementer × N]
+        E2 --> E3[reviewer × N]
     end
 
-    subgraph Continuity[Session Continuity]
-        L1["/ledger"] --> L2[CONTINUITY_*.md]
-        L2 --> L3[Auto-inject on /clear]
-        H1["/handoff"] --> H2[Git Changes Doc]
+    subgraph Phase4 [" "]
+        direction TB
+        L["/ledger"]
+        L --> L1[Session State]
     end
 
-    B3 -->|"designs/*.md"| P1
-    P3 -->|"plans/pending/*.md"| E1
-    E12 -->|"plans/done/*.md"| L1
+    B1 --> P
+    P1 --> E
+    E3 --> L
+```
 
-    style Brainstorm fill:#e1f5fe
-    style Plan fill:#fff3e0
-    style Implement fill:#e8f5e9
-    style Continuity fill:#fce4ec
+**Execution Detail:**
+```mermaid
+flowchart LR
+    A[Plan] --> B[beads-sync]
+    B --> C{Tasks by Phase}
+    C --> D1[implementer]
+    C --> D2[implementer]
+    C --> D3[implementer]
+    D1 --> R1[reviewer]
+    D2 --> R2[reviewer]
+    D3 --> R3[reviewer]
+    R1 & R2 & R3 --> E{Next Phase?}
+    E -->|Yes| C
+    E -->|No| F[Done]
 ```
 
 Research skills (codebase-locator, codebase-analyzer, pattern-finder) are spawned within brainstorm and plan phases.
