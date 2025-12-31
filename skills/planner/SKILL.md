@@ -60,12 +60,13 @@ Spawn research skills in parallel:
 - Task: "codebase-analyzer: Get exact signature for [function mentioned in design]"
 - Task: "pattern-finder: Find exact test setup pattern for [type of test]"
 
-### Phase 4: Write Plan
+### Phase 4: Write Plan and Patterns
 - Break design into sequential tasks (2-5 minutes each)
 - For each task, determine exact file paths from research
 - Write complete code examples following existing style
 - Include exact verification commands with expected output
 - Write plan to Claude Code's plan file (the one specified by plan mode)
+- Write patterns file to `thoughts/shared/patterns/YYYY-MM-DD-{topic}-patterns.md` with naming conventions, code patterns, and anti-patterns discovered during research
 
 ### Phase 5: Exit Plan Mode and Execute
 - Use `ExitPlanMode` tool to get user approval and exit plan mode
@@ -84,7 +85,9 @@ Each step is ONE action (2-5 minutes):
 
 ## Output Format
 
-Write to Claude's plan file (auto-copied to `thoughts/shared/plans/pending/` on exit).
+The planner outputs TWO files:
+1. **Plan file** - Written to Claude's plan file (auto-copied to `thoughts/shared/plans/pending/` on exit)
+2. **Patterns file** - Written to `thoughts/shared/patterns/YYYY-MM-DD-{topic}-patterns.md`
 
 ```markdown
 # [Feature Name] Implementation Plan
@@ -155,6 +158,38 @@ git commit -m "feat(scope): add specific feature"
 
 ## Task 2: [Next Component]
 ...
+```
+
+## Patterns File Format
+
+Write to: `thoughts/shared/patterns/YYYY-MM-DD-{topic}-patterns.md`
+
+```markdown
+# Patterns: [Feature Name]
+
+## Naming Conventions
+- [Specific naming rules from codebase analysis]
+- [Examples of correct names]
+
+## Code Patterns
+
+### [Pattern Category 1]
+**When:** [When to use this pattern]
+**Example:**
+\`\`\`[language]
+[Complete code example from codebase or plan]
+\`\`\`
+**Edge cases:** [How to handle variations]
+
+### [Pattern Category 2]
+[Same structure...]
+
+## Edge Cases
+- [Situation 1]: [How to handle]
+- [Situation 2]: [How to handle]
+
+## Anti-Patterns (Do NOT)
+- [What to avoid]: [Why it's problematic]
 ```
 
 ## Principles

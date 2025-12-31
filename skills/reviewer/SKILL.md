@@ -51,21 +51,30 @@ Check correctness and style. Be specific. Run code, don't just read.
 - Errors don't leak sensitive info?
 - No SQL injection / XSS / etc?
 
+### Patterns (if patterns file provided)
+- Naming conventions followed?
+- Code structure matches documented patterns?
+- No anti-patterns used?
+- Edge cases handled as specified?
+- Pattern insufficiency detected? (patterns file incomplete for this task)
+
 ## Input
 
 You will receive file paths (read them yourself to save tokens):
 1. **Plan** - Path to the plan file (e.g., `thoughts/shared/plans/active/...`)
 2. **Task** - Task number to review from the plan
+3. **Patterns** (optional) - Path to patterns file
 
 ## Process
 
 1. Read the plan file using the Read tool
 2. Find the assigned task in the plan
 3. Read all changed files mentioned in the task
-4. Run tests
-5. Compare implementation to plan
-6. Check each item above
-7. Report with precise references
+4. If patterns path provided, read the patterns file
+5. Run tests
+6. Compare implementation to plan
+7. Check each item above
+8. Report with precise references
 
 ## Output Format
 
@@ -76,6 +85,7 @@ You will receive file paths (read them yourself to save tokens):
 
 ### Critical
 - `file:line` - [issue and why it matters]
+- `file:line` - Pattern violation: [which pattern, how violated]
 
 ### Suggestions
 - `file:line` - [optional improvement]
@@ -84,6 +94,10 @@ You will receive file paths (read them yourself to save tokens):
 - [x] Tests run: [pass/fail]
 - [x] Plan match: [yes/no]
 - [x] Style check: [issues if any]
+
+### Pattern Status
+- [x] Patterns followed / [ ] Deviations noted
+- [ ] Pattern insufficiency: [describe what's missing from PATTERNS.md]
 
 **Summary**: [One sentence]
 ```

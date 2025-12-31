@@ -34,6 +34,82 @@ Before any task execution:
 1. Move plan file from `pending/` to `active/`
 2. Update status block: Status=`active`, Started=YYYY-MM-DD HH:MM
 
+### Derive Patterns Path
+
+From the plan path, derive the patterns path:
+- Plan: `thoughts/shared/plans/active/YYYY-MM-DD-{topic}.md`
+- Patterns: `thoughts/shared/patterns/YYYY-MM-DD-{topic}-patterns.md`
+
+If patterns file does not exist:
+1. Output warning: "No patterns file found. Pattern enforcement disabled."
+2. Continue without pattern injection (backwards compatible)
+
+### Phase Detection
+
+**Auto-detect first execution:**
+Check plan status block - if `Started: -` (never executed), this is Phase A.
+
+**Phase A Selection (3-5 representative tasks):**
+1. Parse all tasks from plan
+2. Select diverse sample:
+   - 1 simple task (few files, straightforward logic)
+   - 1 task with validation/error handling
+   - 1 complex task (multiple files, orchestration)
+   - 1-2 additional for coverage if plan is large (50+ tasks)
+3. Mark selected task numbers as Phase A in executor state
+
+**Phase A vs Phase B:**
+- Phase A: Execute selected tasks SEQUENTIALLY with human review after each
+- Phase B: Execute remaining tasks in PARALLEL batches (existing behavior)
+
+**Transition condition:**
+When 3+ Phase A tasks pass review cleanly → unlock Phase B
+
+### Phase A: Sequential Pattern Lock-In
+
+For each Phase A task (ONE AT A TIME, not parallel):
+
+1. **Spawn implementer** (single task, blocking):
+   ```
+   Task("implementer: Execute Task N from plan.
+   Plan: thoughts/shared/plans/active/YYYY-MM-DD-{topic}.md
+   Patterns: thoughts/shared/patterns/YYYY-MM-DD-{topic}-patterns.md
+   Task: N
+   Beads ID: bd-xxx.N")
+   ```
+
+2. **Wait for completion**, display summary
+
+3. **Spawn reviewer** (single task, blocking):
+   ```
+   Task("reviewer: Review Task N implementation.
+   Plan: thoughts/shared/plans/active/YYYY-MM-DD-{topic}.md
+   Patterns: thoughts/shared/patterns/YYYY-MM-DD-{topic}-patterns.md
+   Task: N")
+   ```
+
+4. **Handle reviewer verdict:**
+   - APPROVED → Ask user (via AskUserQuestion):
+     "Task N passed review. Does implementation match expected patterns? Any PATTERNS.md adjustments needed?"
+     Options: [Continue, Update patterns first]
+   - CHANGES REQUESTED → Re-spawn implementer (max 3 cycles)
+   - PATTERN INSUFFICIENCY flagged → PAUSE, ask user to update PATTERNS.md
+
+5. **Track Phase A progress:**
+   - After 3+ tasks approved cleanly → Output "Phase A complete. Unlocking Phase B."
+   - Proceed to Phase B execution
+
+### Pattern Insufficiency Handling (Phase B)
+
+If reviewer flags pattern drift or insufficiency:
+
+1. **Pause execution** - do not spawn next batch
+2. **Report to user** via AskUserQuestion:
+   "Reviewer detected pattern issue: [specific issue from reviewer output]
+   Please update PATTERNS.md and confirm when ready to resume."
+   Options: [Resume execution, Abort]
+3. **On resume** - continue with updated patterns for all subsequent batches
+
 ### SECOND: Sync to Beads (MANDATORY)
 After activating plan:
 1. Spawn beads-sync subagent with plan path:
@@ -168,21 +244,25 @@ Within a batch (max 4 tasks), spawn ALL implementers in a SINGLE message using *
 # ALL of these in ONE message - they run in parallel, return together
 Task("implementer: Execute Task 1 from plan.
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
+Patterns: thoughts/shared/patterns/2025-01-15-feature-name-patterns.md
 Task: 1
 Beads ID: bd-a1b2.1")
 
 Task("implementer: Execute Task 2 from plan.
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
+Patterns: thoughts/shared/patterns/2025-01-15-feature-name-patterns.md
 Task: 2
 Beads ID: bd-a1b2.2")
 
 Task("implementer: Execute Task 3 from plan.
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
+Patterns: thoughts/shared/patterns/2025-01-15-feature-name-patterns.md
 Task: 3
 Beads ID: bd-a1b2.3")
 
 Task("implementer: Execute Task 4 from plan.
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
+Patterns: thoughts/shared/patterns/2025-01-15-feature-name-patterns.md
 Task: 4
 Beads ID: bd-a1b2.4
 Previous Handoff: thoughts/shared/handoffs/2025-01-15-feature-name-batch-1.md")
@@ -217,10 +297,12 @@ Example spawn with model selection:
 ```
 Task(model="haiku", "implementer: Execute Task 1 - add export statement
 Plan: thoughts/shared/plans/active/2025-01-15-feature.md
+Patterns: thoughts/shared/patterns/2025-01-15-feature-patterns.md
 Task: 1")
 
 Task(model="opus", "implementer: Execute Task 2 - implement auth middleware
 Plan: thoughts/shared/plans/active/2025-01-15-feature.md
+Patterns: thoughts/shared/patterns/2025-01-15-feature-patterns.md
 Task: 2")
 ```
 
@@ -228,10 +310,12 @@ Then after all implementers complete, spawn reviewers for that batch in ONE mess
 ```
 Task("reviewer: Review Task 1 implementation.
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
+Patterns: thoughts/shared/patterns/2025-01-15-feature-name-patterns.md
 Task: 1")
 
 Task("reviewer: Review Task 2 implementation.
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
+Patterns: thoughts/shared/patterns/2025-01-15-feature-name-patterns.md
 Task: 2")
 
 # ... up to 4 reviewers in parallel
@@ -258,10 +342,12 @@ Example:
 ```
 Task(model="haiku", "reviewer: Review Task 1 - added export
 Plan: thoughts/shared/plans/active/2025-01-15-feature.md
+Patterns: thoughts/shared/patterns/2025-01-15-feature-patterns.md
 Task: 1")
 
 Task(model="opus", "reviewer: Review Task 2 - auth middleware
 Plan: thoughts/shared/plans/active/2025-01-15-feature.md
+Patterns: thoughts/shared/patterns/2025-01-15-feature-patterns.md
 Task: 2")
 ```
 

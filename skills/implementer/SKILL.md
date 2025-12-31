@@ -80,13 +80,15 @@ You will receive file paths (read them yourself to save tokens):
 2. **Task** - Task number to execute from the plan
 3. **Beads ID** - Beads issue ID for this task (e.g., `bd-a1b2.3`)
 4. **Previous Handoff** (if applicable) - Path to handoff from earlier batch
+5. **Patterns** (optional) - Path to patterns file (e.g., `thoughts/shared/patterns/YYYY-MM-DD-{topic}-patterns.md`)
 
 ## First Steps
 
 1. Read the plan file using the Read tool
 2. Find your assigned task number in the plan
 3. Read the previous handoff file if provided
-4. Then proceed with implementation
+4. If patterns path provided, read the patterns file using the Read tool
+5. Then proceed with implementation
 
 Use the plan to understand:
 - Overall goal and architecture
@@ -99,6 +101,18 @@ Use the handoff (if provided) to understand:
 - Files that were created/modified
 - API contracts or interfaces to consume
 - Gotchas from previous tasks
+
+### Pattern Compliance
+
+When patterns file is provided:
+- Follow naming conventions exactly as documented
+- Use code structure patterns from the file
+- Handle edge cases as specified
+- Avoid anti-patterns listed
+
+If you must deviate from patterns:
+- Document the deviation in handoff notes
+- Explain why the deviation was necessary
 
 ## Output Format
 
@@ -124,6 +138,7 @@ Use the handoff (if provided) to understand:
 - [Gotchas for dependent tasks]
 - [API contracts or interfaces created]
 - [Patterns used that next tasks should follow]
+- Pattern deviations (if any, with justification)
 ```
 
 ## On Mismatch or Failure
