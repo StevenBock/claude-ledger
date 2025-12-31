@@ -68,6 +68,11 @@
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/artifact-auto-index.sh",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/batch-handoff-aggregator.sh",
+            "timeout": 10
           }
         ]
       },

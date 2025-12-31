@@ -73,11 +73,21 @@ After successful implementation and all verifications pass:
 
    Create: `thoughts/shared/handoffs/{plan-name}/task-{N}.md`
 
+   **IMPORTANT:** Include YAML frontmatter for hook aggregation.
+
    ```markdown
+   ---
+   task: {N}
+   batch: {batch number from input}
+   plan: {plan-name}
+   status: complete
+   timestamp: {ISO timestamp}
+   files_modified:
+     - path/file.ts
+     - path/other.ts
+   ---
+
    # Task {N} Handoff: {task description}
-   Status: Complete
-   Beads: {beads-id}
-   Timestamp: {ISO timestamp}
 
    ## What Was Done
    {Brief summary of implementation}
@@ -98,7 +108,7 @@ After successful implementation and all verifications pass:
    {Critical context for task N+1}
    ```
 
-   The handoff file enables subsequent tasks to understand what was done.
+   The frontmatter enables automatic batch handoff aggregation. The hook reads these fields to generate consolidated batch handoffs.
 
 4. Return result to executor with Beads status.
 
@@ -109,10 +119,11 @@ After successful implementation and all verifications pass:
 You will receive file paths (read them yourself to save tokens):
 1. **Plan** - Path to the plan file (e.g., `thoughts/shared/plans/active/...`)
 2. **Task** - Task number to execute from the plan
-3. **Beads ID** - Beads issue ID for this task (e.g., `bd-a1b2.3`)
-4. **Previous Batch Handoff** (if applicable) - Path to batch handoff from earlier batch
-5. **Previous Task Handoff** (if applicable) - Path to handoff from immediately preceding task (e.g., `thoughts/shared/handoffs/{plan}/task-{N-1}.md`)
-6. **Patterns** (optional) - Path to patterns file (e.g., `thoughts/shared/patterns/YYYY-MM-DD-{topic}-patterns.md`)
+3. **Batch** - Batch number this task belongs to
+4. **Beads ID** - Beads issue ID for this task (e.g., `bd-a1b2.3`)
+5. **Previous Batch Handoff** (if applicable) - Path to batch handoff from earlier batch
+6. **Previous Task Handoff** (if applicable) - Path to handoff from immediately preceding task (e.g., `thoughts/shared/handoffs/{plan}/task-{N-1}.md`)
+7. **Patterns** (optional) - Path to patterns file (e.g., `thoughts/shared/patterns/YYYY-MM-DD-{topic}-patterns.md`)
 
 ## First Steps
 
