@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-claudeledger is a Claude Code plugin providing a structured **Brainstorm → Plan → Implement** workflow with session continuity. It includes commands, hooks, and an MCP server for artifact indexing.
+claudeledger is a Claude Code plugin providing a structured **Brainstorm → Plan → Implement** workflow with session continuity. It includes skills, commands, hooks, and an MCP server for artifact indexing.
 
 ## Build Commands
 
@@ -42,13 +42,24 @@ After release, restart Claude Code to pick up changes.
 
 ### Plugin Structure
 ```
-.claude-plugin/plugin.json  # Plugin manifest - defines commands, hooks, mcpServers paths
+.claude-plugin/plugin.json  # Plugin manifest - defines commands, skills, hooks, mcpServers paths
 .mcp.json                   # MCP server configurations (context7, artifact-index)
 commands/                   # Slash commands (markdown files)
+skills/                     # Agent skills (SKILL.md files with frontmatter)
 hooks/                      # Event hooks (hooks.json + TypeScript sources)
 servers/artifact-index/     # SQLite-backed full-text search MCP server
 thoughts/                   # Runtime artifacts (ledgers, designs, plans) - gitignored
 ```
+
+### Skills (skills/*/SKILL.md)
+- **executor**: Parallel task execution with dependency analysis, spawns implementer/reviewer
+- **implementer**: Executes single task from plan, TDD workflow
+- **reviewer**: Verifies correctness against plan, runs tests
+- **brainstorm**: Design exploration via collaborative questioning
+- **planner**: Creates detailed implementation plans
+- **codebase-locator**: Returns file paths only, no content analysis
+- **codebase-analyzer**: Explains code with file:line references
+- **pattern-finder**: Finds existing patterns to follow
 
 ### Commands (commands/*.md)
 - `/brainstorm`: Refine ideas into designs through collaborative questioning
@@ -107,7 +118,10 @@ pending/ → active/ → done/
 
 ## Key Patterns
 
-### TDD Workflow (Planner)
+### Skill Spawning
+Skills spawn subagents in parallel using Task tool in a SINGLE message for true parallelism.
+
+### TDD Workflow (Planner/Implementer)
 1. Write failing test
 2. Run test to verify failure
 3. Implement minimal code
@@ -118,6 +132,16 @@ pending/ → active/ → done/
 Used for session continuity across `/clear` or context compaction. Contains: Goal, Constraints, Progress (Done/In Progress/Blocked), Key Decisions, Next Steps, File Operations, Working Set.
 
 ## Adding New Components
+
+### New Skill
+1. Create `skills/{skill-name}/SKILL.md` with frontmatter:
+   ```yaml
+   ---
+   name: skill-name
+   description: One-line for skill discovery
+   ---
+   ```
+2. Skills auto-discovered via `.claude-plugin/plugin.json` → `skills: "./skills/"`
 
 ### New Command
 1. Create `commands/{command}.md` with frontmatter:

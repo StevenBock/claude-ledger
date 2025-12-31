@@ -11,5 +11,6 @@
   "license": "MIT",
   "keywords": ["workflow", "planning", "continuity", "brainstorm", "implementation"],
   "commands": "./commands/",
+  "skills": "./skills/",
   "mcpServers": "./.mcp.json"
 }
