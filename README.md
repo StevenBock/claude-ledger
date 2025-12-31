@@ -55,15 +55,17 @@ Transform validated designs into comprehensive implementation plans.
 - Bite-sized tasks (2-5 minutes each)
 - Exact file paths, complete code examples
 - TDD workflow: failing test → verify fail → implement → verify pass → commit
-- Output: `thoughts/shared/plans/YYYY-MM-DD-{topic}.md`
+- Output: `thoughts/shared/plans/pending/YYYY-MM-DD-{topic}.md`
 
 ### 3. Implement
 
 Execute plan with intelligent parallelization:
 
+- Moves plan from `pending/` → `active/` → `done/`
 - Analyzes task dependencies
 - Batches independent tasks for parallel execution
 - Per-task implementer → reviewer cycle
+- Updates embedded executor status block in plan
 - Generates batch handoff documents for context continuity
 - Max 3 cycles per task before blocking
 - Output: `thoughts/shared/handoffs/YYYY-MM-DD-{plan}-batch-{N}.md`
@@ -92,6 +94,7 @@ The ledger is automatically injected on `/clear`, `/resume`, or context compacti
 | `/brainstorm` | Refine ideas into designs through collaborative questioning |
 | `/planner` | Create detailed implementation plan from a validated design |
 | `/execute` | Execute an implementation plan with parallel task batching |
+| `/plans [n\|active\|done\|all]` | List plans or execute plan #n from pending |
 | `/ledger` | Create or update continuity ledger |
 | `/search` | Search past plans and ledgers |
 
@@ -117,6 +120,7 @@ The ledger is automatically injected on `/clear`, `/resume`, or context compacti
 | file-ops-tracker | PostToolUse | Track read/write operations |
 | comment-checker | PostToolUse (Edit) | Warn about unnecessary comments |
 | artifact-auto-index | PostToolUse (Write) | Index plans and ledgers |
+| plan-copier | PostToolUse (ExitPlanMode) | Copy plan to pending/ folder |
 | auto-save-ledger | PreCompact | Save file ops to ledger before compact |
 
 ## MCP Servers
@@ -147,6 +151,7 @@ claudeledger/
 │   ├── brainstorm.md
 │   ├── planner.md
 │   ├── execute.md
+│   ├── plans.md
 │   ├── ledger.md
 │   └── search.md
 ├── skills/                 # Agent skills
@@ -172,6 +177,9 @@ claudeledger/
         ├── designs/
         ├── handoffs/
         └── plans/
+            ├── pending/   # New plans
+            ├── active/    # Currently executing
+            └── done/      # Completed
 ```
 
 ## Development

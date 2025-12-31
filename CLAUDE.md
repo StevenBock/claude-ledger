@@ -54,6 +54,7 @@ Skills spawn research subagents (codebase-locator, codebase-analyzer, pattern-fi
 - `/brainstorm`: Refine ideas into designs through collaborative questioning
 - `/planner`: Create detailed implementation plan from a validated design
 - `/execute`: Invokes executor skill to run an implementation plan
+- `/plans [n|active|done|all]`: List plans or execute plan #n from pending
 - `/ledger`: Creates/updates continuity ledger in `thoughts/ledgers/CONTINUITY_{session}.md`
 - `/search`: Searches artifact-index for past plans and ledgers
 
@@ -64,6 +65,7 @@ Skills spawn research subagents (codebase-locator, codebase-analyzer, pattern-fi
 | PostToolUse | Read\|Edit\|Write | file-ops-tracker |
 | PostToolUse | Write | artifact-auto-index |
 | PostToolUse | Edit | comment-checker |
+| PostToolUse | ExitPlanMode | plan-copier (copies plan to pending/) |
 | PreCompact | * | auto-save-ledger |
 
 ### MCP Server (servers/artifact-index/)
@@ -73,9 +75,17 @@ Database location: `~/.config/claude-code/artifact-index/context.db`
 
 ## Artifact Locations
 - Designs: `thoughts/shared/designs/YYYY-MM-DD-{topic}-design.md`
-- Plans: `thoughts/shared/plans/YYYY-MM-DD-{topic}.md`
+- Plans (lifecycle): `thoughts/shared/plans/{pending|active|done}/YYYY-MM-DD-{topic}.md`
 - Handoffs: `thoughts/shared/handoffs/YYYY-MM-DD-{plan-name}-batch-{N}.md`
 - Ledgers: `thoughts/ledgers/CONTINUITY_{session-name}.md`
+
+## Plan Lifecycle
+```
+pending/ → active/ → done/
+```
+- **pending/**: New plans from planner (via plan-copier hook)
+- **active/**: Plans currently being executed
+- **done/**: Completed plans (all tasks done)
 
 ## Key Patterns
 
