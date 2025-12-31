@@ -81,19 +81,14 @@ For each task:
 
 ## Parallel Spawning
 
-Within a batch, spawn ALL implementers in a SINGLE message. **ALWAYS include the full plan** so implementers have complete context:
+Within a batch, spawn ALL implementers in a SINGLE message. Pass the **plan file path** so implementers can read it themselves (saves tokens):
 
 ```
-Task("implementer: Execute task 1 from the following plan:
+Task("implementer: Execute Task 1 from plan.
 
-## Full Plan
-[PASTE ENTIRE PLAN CONTENT HERE]
-
-## Your Task
-Task 1: [task details from plan]
-
-## Previous Batch Context (if applicable)
-[handoff from previous batch]
+Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
+Task: 1
+Previous Handoff: thoughts/shared/handoffs/2025-01-15-feature-name-batch-1.md (if applicable)
 ")
 ```
 
@@ -101,13 +96,10 @@ Repeat for each task in the batch, all in ONE message for parallel execution.
 
 Then after all complete, in ONE message spawn reviewers:
 ```
-Task("reviewer: Review task 1 implementation against this plan:
+Task("reviewer: Review Task 1 implementation.
 
-## Full Plan
-[PASTE ENTIRE PLAN CONTENT HERE]
-
-## Task to Review
-Task 1: [task details]
+Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
+Task: 1
 ")
 ```
 

@@ -51,14 +51,21 @@ Check correctness and style. Be specific. Run code, don't just read.
 - Errors don't leak sensitive info?
 - No SQL injection / XSS / etc?
 
+## Input
+
+You will receive file paths (read them yourself to save tokens):
+1. **Plan** - Path to the plan file (e.g., `thoughts/shared/plans/active/...`)
+2. **Task** - Task number to review from the plan
+
 ## Process
 
-1. Read the plan
-2. Read all changed files
-3. Run tests
-4. Compare implementation to plan
-5. Check each item above
-6. Report with precise references
+1. Read the plan file using the Read tool
+2. Find the assigned task in the plan
+3. Read all changed files mentioned in the task
+4. Run tests
+5. Compare implementation to plan
+6. Check each item above
+7. Report with precise references
 
 ## Output Format
 

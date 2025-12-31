@@ -48,12 +48,19 @@ Execute the plan. Write code. Verify.
 
 ## Input
 
-You will receive:
-1. **Full Plan** - The complete implementation plan with all tasks
-2. **Your Task** - The specific task you should execute
-3. **Previous Batch Handoff** (if applicable) - Context from earlier batches
+You will receive file paths (read them yourself to save tokens):
+1. **Plan** - Path to the plan file (e.g., `thoughts/shared/plans/active/...`)
+2. **Task** - Task number to execute from the plan
+3. **Previous Handoff** (if applicable) - Path to handoff from earlier batch
 
-Use the full plan to understand:
+## First Steps
+
+1. Read the plan file using the Read tool
+2. Find your assigned task number in the plan
+3. Read the previous handoff file if provided
+4. Then proceed with implementation
+
+Use the plan to understand:
 - Overall goal and architecture
 - How your task fits into the bigger picture
 - Dependencies between tasks
