@@ -67,10 +67,30 @@ Plan with 6 tasks:
 For each task:
 1. Spawn implementer with task details
 2. Wait for implementer to complete
-3. Spawn reviewer to check that task
-4. If reviewer requests changes: re-spawn implementer for fixes
-5. Max 3 cycles per task before marking as blocked
-6. Report task status: DONE / BLOCKED
+3. **Display implementer summary** (changes made, files modified)
+4. Spawn reviewer to check that task
+5. **Display reviewer verdict** (approved/changes requested, key findings)
+6. If reviewer requests changes: re-spawn implementer for fixes
+7. Max 3 cycles per task before marking as blocked
+8. Report task status: DONE / BLOCKED
+
+## Displaying Progress
+
+After each agent completes, show a brief summary to the user:
+
+```
+Task 1 - Implementer:
+  ✓ Created src/components/Button.tsx
+  ✓ Added tests in tests/Button.test.tsx
+  ✓ Tests passing
+
+Task 1 - Reviewer:
+  ✓ APPROVED
+  - Tests cover main functionality
+  - Code matches plan
+```
+
+This keeps the user informed without them needing to dig into agent outputs.
 
 ## Parallel Spawning
 
