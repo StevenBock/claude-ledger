@@ -1,4 +1,6 @@
 node_modules/
 thoughts/ledgers/
+hooks/dist/
+.claude/
 *.log
 .DS_Store
