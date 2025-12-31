@@ -2,6 +2,26 @@
 
 Structured **Brainstorm → Plan → Implement** workflow with session continuity.
 
+## Why?
+
+Large coding tasks hit a wall: **context window limits**.
+
+When Claude's context fills up, it compacts the conversation—summarizing what came before. Each compaction loses detail. After several compactions, the agent starts hallucinating: referencing files that don't exist, forgetting decisions made earlier, or duplicating work already done.
+
+**claude-ledger solves this by:**
+
+1. **Structured artifacts** — Designs, plans, and ledgers persist to disk. They survive compaction intact.
+
+2. **Parallel execution** — The executor spawns up to 4 implementer agents simultaneously. Each runs in its own context, reports back, and exits. The main context stays small.
+
+3. **Minimal context usage** — Blocking parallel calls use ~2 context entries per batch vs 10-30+ for sequential work. More work, less context burn.
+
+4. **Automatic continuity** — On `/clear` or compaction, the ledger auto-injects: goals, decisions, progress, and file operations. Nothing critical is lost.
+
+5. **Dependency tracking** — Beads integration tracks task dependencies. The executor knows what's done, what's blocked, and what can run in parallel—without re-reading the entire history.
+
+The result: complete multi-file features, refactors, and migrations **in a single session** without degraded output quality.
+
 ## Installation
 
 ### From Marketplace
