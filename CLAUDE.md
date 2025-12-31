@@ -24,6 +24,20 @@ After modifying hooks or MCP server:
 2. Restart Claude Code to pick up hook/MCP changes
 3. Shell hooks (.sh) don't require rebuild, but TypeScript hooks (.ts → .mjs) do
 
+## Releasing
+
+```bash
+./scripts/release.sh "Your commit message"
+```
+
+This script:
+1. Bumps patch version in `package.json`, `plugin.json`, `marketplace.json`
+2. Commits with message + version bump
+3. Pushes to origin/main
+4. Attempts to update the installed plugin
+
+After release, restart Claude Code to pick up changes.
+
 ## Architecture
 
 ### Plugin Structure
@@ -68,13 +82,17 @@ Skills spawn research subagents (codebase-locator, codebase-analyzer, pattern-fi
 ### Hooks (hooks/hooks.json)
 | Event | Matcher | Hook | Notes |
 |-------|---------|------|-------|
+| SessionStart | startup\|resume\|compact\|clear | git-snapshot-capture | Captures git state for handoffs |
 | SessionStart | resume\|compact\|clear | ledger-loader | Loads most recent CONTINUITY_*.md |
 | SessionStart | resume\|compact\|clear | context-injector | Injects additional context |
+| PreToolUse | Task | batch-handoff-enforcer | Blocks batch N+1 until batch N handoff exists |
 | PostToolUse | Read\|Edit\|Write | file-ops-tracker | Tracks file operations for ledger |
+| PostToolUse | Read\|Edit | plan-lifecycle | Auto-moves plans pending→active→done |
 | PostToolUse | Write | artifact-auto-index | Auto-indexes new plans/ledgers |
 | PostToolUse | Edit | comment-checker | Checks for inline comments |
 | PostToolUse | ExitPlanMode | plan-copier | Copies plan to pending/ |
-| PreCompact | * | auto-save-ledger | Saves ledger before compaction |
+| PostToolUse | AskUserQuestion | decision-capture | Captures decisions to decisions.json |
+| PreCompact | * | auto-save-ledger | Saves ledger + decisions before compaction |
 
 **Hook Implementation Pattern**: Shell scripts (.sh) call TypeScript (.ts → .mjs via esbuild). Hooks receive JSON on stdin, output JSON with `result: "continue"` and optional `hookSpecificOutput.additionalContext`.
 
