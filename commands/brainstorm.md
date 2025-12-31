@@ -5,7 +5,7 @@ description: Refine ideas into designs through collaborative questioning
 # Brainstorm
 
 Turn ideas into fully formed designs through natural collaborative dialogue.
-This is DESIGN ONLY. The planner skill handles detailed implementation plans.
+This is DESIGN ONLY. The `/planner` command handles detailed implementation plans.
 
 ## When to Use
 
@@ -20,25 +20,20 @@ This is DESIGN ONLY. The planner skill handles detailed implementation plans.
 2. **Use AskUserQuestion for clarifying questions** - After user provides details, use AskUserQuestion tool for all follow-up questions with structured options
 3. **One question at a time** - Wait for response before continuing
 4. **NO CODE** - Never write code examples, stay at design level
-5. **Spawn research in parallel** - Use Task tool with codebase-locator, codebase-analyzer, pattern-finder
+5. **Parallel research** - Spawn Task (Explore) agents in parallel for codebase context
 
 **IMPORTANT**: Let user describe their idea first, THEN use `AskUserQuestion` for clarifying questions.
 
-## Research Subagents
+## Research with Parallel Agents
 
-When you need codebase context, spawn these in parallel using Task:
+When you need codebase context, spawn multiple Task agents in parallel using `subagent_type=Explore`:
 
-| Subagent | Purpose |
-|----------|---------|
-| codebase-locator | Find WHERE files are (paths only, no content) |
-| codebase-analyzer | Explain HOW code works (with file:line refs) |
-| pattern-finder | Find existing patterns to follow |
+**Parallel spawn example** - In a SINGLE message, spawn all at once:
+- Task (Explore): "Find files related to [topic] and explain their purpose"
+- Task (Explore): "Analyze how [feature] works in this codebase"
+- Task (Explore): "Find patterns for [similar functionality]"
 
-**Parallel spawn example:**
-In a SINGLE message, spawn:
-- Task: "codebase-locator: Find files related to [topic]"
-- Task: "codebase-analyzer: Analyze existing [feature]"
-- Task: "pattern-finder: Find patterns for [similar functionality]"
+This saves context by offloading research to subagents that return summarized results.
 
 ## Using AskUserQuestion
 
@@ -84,7 +79,7 @@ AskUserQuestion(questions: [
 - Do NOT use AskUserQuestion yet - let them explain freely
 
 ### Phase 1: Understanding
-- Spawn research skills in parallel to gather context based on what user described
+- Spawn parallel Task (Explore) agents to gather codebase context based on what user described
 - Use `AskUserQuestion` to clarify purpose, constraints, success criteria
 - One question at a time, wait for answer
 
@@ -146,8 +141,7 @@ Unresolved items, if any
 ## Principles
 
 - **Design-only**: NO CODE. Describe components, not implementations.
-- **Subagents-first**: ALWAYS use Task for code analysis
-- **Parallel-spawn**: Spawn multiple Tasks in a SINGLE message
+- **Parallel-research**: Spawn multiple Task (Explore) agents in a SINGLE message
 - **One-question**: Ask ONE question at a time, wait for answer
 - **YAGNI**: Remove unnecessary features from ALL designs
 - **Explore-alternatives**: ALWAYS propose 2-3 approaches before settling

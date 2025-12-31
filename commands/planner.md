@@ -20,7 +20,7 @@ Every task is bite-sized (2-5 minutes), with exact paths and complete code.
 1. **Start with open prompt** - Ask user to describe what they want to plan or point to a design file
 2. **Use AskUserQuestion for clarifying questions** - After user provides details, use AskUserQuestion for follow-ups
 3. **Follow the design** - The brainstormer's design is the spec. Do not explore alternatives.
-4. **Use research skills** - Spawn for implementation details (paths, signatures, line numbers)
+4. **Parallel research** - Spawn Task (Explore) agents in parallel to find implementation details
 5. **Complete code examples** - Never write "add validation here"
 6. **Exact file paths** - Never write "somewhere in src/"
 7. **TDD workflow** - failing test -> verify fail -> implement -> verify pass -> commit
@@ -53,11 +53,13 @@ All research must serve the design - never second-guess design decisions.
 - Note any constraints or decisions
 
 ### Phase 3: Implementation Research
-Spawn research skills in parallel:
-- Task: "codebase-locator: Find exact path to [component from design]"
-- Task: "codebase-locator: Find test file naming convention"
-- Task: "codebase-analyzer: Get exact signature for [function mentioned in design]"
-- Task: "pattern-finder: Find exact test setup pattern for [type of test]"
+Spawn parallel Task agents with `subagent_type=Explore` in a SINGLE message:
+- Task (Explore): "Find exact path to [component from design]"
+- Task (Explore): "Find test file naming conventions in this codebase"
+- Task (Explore): "Get exact signature for [function mentioned in design]"
+- Task (Explore): "Find existing patterns for [type of functionality]"
+
+This saves context by offloading research to subagents.
 
 ### Phase 4: Write Plan
 - Break design into sequential tasks (2-5 minutes each)
@@ -66,11 +68,11 @@ Spawn research skills in parallel:
 - Include exact verification commands with expected output
 - Write plan to Claude Code's plan file (the one specified by plan mode)
 
-### Phase 5: Exit Plan Mode and Execute
+### Phase 5: Exit Plan Mode
 - Use `ExitPlanMode` tool to get user approval and exit plan mode
-- A hook automatically copies the plan to `thoughts/shared/plans/`
-- Invoke `/execute` to begin implementation
-- DO NOT implement directly - the executor handles parallel batching and review cycles
+- Tell the user: "Run `/approve` to save this plan and start the executor, or I can implement directly."
+- If user runs `/approve`: plan is saved to `thoughts/shared/plans/pending/` and executor handles implementation
+- If user says to proceed: implement directly (simpler but no parallel batching)
 
 ## Task Granularity
 
