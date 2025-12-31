@@ -1,4 +1,4 @@
 node_modules/
-thoughts/
+thoughts/ledgers/
 *.log
 .DS_Store
