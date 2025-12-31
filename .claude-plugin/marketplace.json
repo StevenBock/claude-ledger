@@ -8,7 +8,7 @@
       "name": "claude-ledger",
       "source": "./",
       "description": "Structured Brainstorm → Plan → Implement workflow with session continuity",
-      "version": "1.0.51",
+      "version": "1.0.52",
       "license": "MIT",
       "keywords": ["workflow", "planning", "continuity", "brainstorm", "implementation"]
     }

@@ -1,6 +1,7 @@
 ---
 name: reviewer
 description: Reviews implementation for correctness and style. Use when verifying that implemented code matches the plan and passes tests.
+model: opus
 ---
 
 # Reviewer
@@ -67,12 +68,12 @@ You will receive file paths (read them yourself to save tokens):
 
 ## Process
 
-1. Read the plan file using the Read tool
+1. **Read the plan file first** - Always start by reading the full plan to understand context and requirements
 2. Find the assigned task in the plan
 3. Read all changed files mentioned in the task
 4. If patterns path provided, read the patterns file
 5. Run tests
-6. Compare implementation to plan
+6. Compare implementation to plan requirements exactly
 7. Check each item above
 8. Report with precise references
 

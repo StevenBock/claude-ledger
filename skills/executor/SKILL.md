@@ -327,29 +327,16 @@ Task: 2")
 
 ### Reviewer Model Selection
 
-Reviewers can also use model selection:
-
-**Use Haiku** for reviewing:
-- Single-line or trivial changes
-- Import/export additions
-- Typo fixes
-- Changes where correctness is obvious from diff
-
-**Use Opus** for reviewing:
-- New feature implementations
-- Logic changes or refactors
-- Security-sensitive code
-- Tests with complex assertions
-- Anything where subtle bugs could hide
+**Always use Opus for reviewers.** Code review requires maximum intelligence to catch subtle bugs, security issues, and pattern violations. The cost of missing an issue exceeds any model savings.
 
 Example:
 ```
-Task(model="haiku", "reviewer: Review Task 1 - added export
+Task(model="opus", "reviewer: Review Task 1 implementation.
 Plan: thoughts/shared/plans/active/2025-01-15-feature.md
 Patterns: thoughts/shared/patterns/2025-01-15-feature-patterns.md
 Task: 1")
 
-Task(model="opus", "reviewer: Review Task 2 - auth middleware
+Task(model="opus", "reviewer: Review Task 2 implementation.
 Plan: thoughts/shared/plans/active/2025-01-15-feature.md
 Patterns: thoughts/shared/patterns/2025-01-15-feature-patterns.md
 Task: 2")
