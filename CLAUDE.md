@@ -96,6 +96,10 @@ Skills spawn research subagents (codebase-locator, codebase-analyzer, pattern-fi
 
 **Hook Implementation Pattern**: Shell scripts (.sh) call TypeScript (.ts → .mjs via esbuild). Hooks receive JSON on stdin, output JSON with `result: "continue"` and optional `hookSpecificOutput.additionalContext`.
 
+**Reference Docs** (use WebFetch for current API):
+- Hooks: https://code.claude.com/docs/en/hooks.md
+- Plugins: https://code.claude.com/docs/en/plugins.md
+
 ### MCP Server (servers/artifact-index/)
 SQLite-backed full-text search across plans and ledgers using FTS5.
 
