@@ -118,6 +118,40 @@ Previous Handoff: thoughts/shared/handoffs/2025-01-15-feature-name-batch-1.md (i
 
 Repeat for each task in the batch, all in ONE message for parallel execution.
 
+## Model Selection
+
+Choose the appropriate model when spawning agents based on task complexity:
+
+**Use Haiku** for simple, mechanical tasks:
+- Adding imports or exports
+- Renaming variables/functions
+- Fixing typos or minor syntax errors
+- Adding simple test cases (no complex mocking)
+- Straightforward file moves/copies
+- Single-line or few-line changes with obvious implementation
+
+**Use Opus** for complex, reasoning-heavy tasks:
+- Implementing new features or business logic
+- Refactoring code (especially multi-file)
+- Tasks requiring architectural understanding
+- Writing tests with complex setup/mocking
+- Debugging non-obvious issues
+- Tasks with multiple valid approaches requiring judgment
+- Any task where getting it wrong would be costly
+
+**When uncertain, default to Opus** - the cost of a wrong implementation exceeds the savings from using a cheaper model.
+
+Example spawn with model selection:
+```
+Task(model="haiku", "implementer: Execute Task 1 - add export statement
+Plan: thoughts/shared/plans/active/2025-01-15-feature.md
+Task: 1")
+
+Task(model="opus", "implementer: Execute Task 2 - implement auth middleware
+Plan: thoughts/shared/plans/active/2025-01-15-feature.md
+Task: 2")
+```
+
 Then after all complete, in ONE message spawn reviewers:
 ```
 Task("reviewer: Review Task 1 implementation.
@@ -125,6 +159,34 @@ Task("reviewer: Review Task 1 implementation.
 Plan: thoughts/shared/plans/active/2025-01-15-feature-name.md
 Task: 1
 ")
+```
+
+### Reviewer Model Selection
+
+Reviewers can also use model selection:
+
+**Use Haiku** for reviewing:
+- Single-line or trivial changes
+- Import/export additions
+- Typo fixes
+- Changes where correctness is obvious from diff
+
+**Use Opus** for reviewing:
+- New feature implementations
+- Logic changes or refactors
+- Security-sensitive code
+- Tests with complex assertions
+- Anything where subtle bugs could hide
+
+Example:
+```
+Task(model="haiku", "reviewer: Review Task 1 - added export
+Plan: thoughts/shared/plans/active/2025-01-15-feature.md
+Task: 1")
+
+Task(model="opus", "reviewer: Review Task 2 - auth middleware
+Plan: thoughts/shared/plans/active/2025-01-15-feature.md
+Task: 2")
 ```
 
 ## Batch Handoff Generation
