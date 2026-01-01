@@ -1,12 +1,12 @@
 ---
 name: reviewer
 description: Reviews implementation for correctness and style. Use when verifying that implemented code matches the plan and passes tests.
-model: opus
+model: haiku
 ---
 
 # Reviewer
 
-Orchestrates parallel sub-reviewers for thorough code review.
+Orchestrates code review via Claude CLI with extended thinking.
 
 ## When to Use
 
@@ -16,7 +16,7 @@ Orchestrates parallel sub-reviewers for thorough code review.
 
 ## Input
 
-You will receive file paths (read them yourself to save tokens):
+You will receive:
 1. **Plan** - Path to the plan file (e.g., `thoughts/shared/plans/active/...`)
 2. **Task** - Task number to review from the plan
 3. **Patterns** (optional) - Path to patterns file
@@ -29,115 +29,94 @@ You will receive file paths (read them yourself to save tokens):
 2. Find the specific task
 3. Identify all files modified/created by this task
 
-### Step 2: Spawn Sub-Reviewers (Parallel)
+### Step 2: Invoke claude-cli Skill
 
-In ONE message, spawn 5 Task agents with `model: opus`:
+Spawn the claude-cli skill to perform the actual review with extended thinking:
 
 ```
-Task(model="opus", "correctness-reviewer: Review task implementation.
-Plan: [plan path]
-Task: [task number]
-Changed files: [list of files]")
+Task("claude-cli: Invoke CLI for task review.
+task: ultrathink. Review ONLY the specific task's implementation. Do NOT review the entire branch.
 
-Task(model="opus", "completeness-reviewer: Review task implementation.
-Plan: [plan path]
-Task: [task number]
-Changed files: [list of files]")
+SCOPE: Task [N] only - these specific files:
+- [file1]
+- [file2]
 
-Task(model="opus", "style-reviewer: Review task implementation.
 Plan: [plan path]
-Task: [task number]
-Changed files: [list of files]
-Patterns: [patterns path if provided]")
+Task number: [N]
+Patterns file: [patterns path or 'none']
 
-Task(model="opus", "security-reviewer: Review task implementation.
-Plan: [plan path]
-Task: [task number]
-Changed files: [list of files]")
+Instructions:
+1. Read the plan file, find task [N]'s requirements
+2. Read ONLY the changed files listed above (not whole branch)
+3. For consistency: find 2-3 similar EXISTING files and compare patterns
+4. Run tests for this task if applicable
+5. Output: Status: APPROVED or CHANGES REQUESTED
 
-Task(model="opus", "consistency-reviewer: Review task implementation.
-Plan: [plan path]
-Task: [task number]
-Changed files: [list of files]")
+system_prompt: You are reviewing a SINGLE TASK from a plan, not the entire branch. Focus only on the files listed. Check: (1) Security; (2) Correctness vs plan requirements; (3) Completeness - tests for this task; (4) Consistency - compare against similar existing files for patterns (file headers, imports, naming); (5) Style. Do NOT use git diff main..HEAD - only review the specific files provided.
+
+allowed_tools: Read,Glob,Grep,Bash(npm test*),Bash(php*),Bash(./vendor/*)
+model: opus")
 ```
 
-### Step 3: Aggregate Results
+### Step 3: Return Review Results
 
-Collect findings from all 5 sub-reviewers and determine verdict:
+Return the CLI output to the executor. The output should contain:
+- **Status**: APPROVED or CHANGES REQUESTED
+- **Critical Issues**: Blocking problems by category
+- **Suggestions**: Non-blocking improvements
 
-**CHANGES REQUESTED** if ANY sub-reviewer reports:
-- Security: ANY critical vulnerability
-- Correctness: ANY critical issue (logic error, plan non-compliance)
-- Completeness: Missing required tests or incomplete implementation
-- Consistency: Critical pattern violations (e.g., missing file headers)
-
-**APPROVED** if:
-- No critical issues from any sub-reviewer
-- All plan requirements verified as implemented
-- Tests pass
-
-### Step 4: Output Combined Review
-
-## Output Format
+## Expected Output Format
 
 ```markdown
 ## Review: [Component] - Task [N]
 
 **Status**: APPROVED / CHANGES REQUESTED
 
-### Security (from security-reviewer)
-[Summarize critical findings or "No issues found"]
+### Security
+[Findings or "No issues found"]
 
-### Correctness (from correctness-reviewer)
-[Summarize critical findings or "All plan requirements verified"]
+### Correctness
+[Findings or "All plan requirements verified"]
 
-### Completeness (from completeness-reviewer)
-[Summarize critical findings or "Tests present and passing"]
+### Completeness
+[Findings or "Tests present and passing"]
 
-### Consistency (from consistency-reviewer)
-[Summarize critical findings or "Matches existing codebase patterns"]
+### Consistency
+**Reference files examined**: [list similar files compared]
+[Findings or "Matches existing codebase patterns"]
 
-### Style (from style-reviewer)
-[Summarize suggestions or "Clean"]
+### Style
+[Suggestions or "Clean"]
 
 ### Critical Issues (must fix)
-- `file:line` - [issue]: [from which sub-reviewer]
+- `file:line` - [issue]: [category]
 
-### Suggestions (optional improvements)
-- `file:line` - [suggestion]: [from which sub-reviewer]
-
-### Verification Summary
-- [x] Security: [pass/issues]
-- [x] Correctness: [pass/issues]
-- [x] Completeness: [pass/issues]
-- [x] Consistency: [pass/issues]
-- [x] Style: [pass/suggestions]
+### Suggestions (optional)
+- `file:line` - [suggestion]: [category]
 
 **Summary**: [One sentence overall assessment]
 ```
 
-## Sub-Reviewer Responsibilities
+## Review Categories
 
-| Sub-Reviewer | Focus |
-|--------------|-------|
-| `correctness-reviewer` | Logic errors, edge cases, plan compliance |
-| `completeness-reviewer` | Test coverage, incomplete implementations, TODOs |
-| `style-reviewer` | Naming, dead code, complexity |
-| `security-reviewer` | Injection, secrets, validation |
-| `consistency-reviewer` | Matches existing codebase patterns (file headers, imports, structure) |
+| Category | Focus | Blocking? |
+|----------|-------|-----------|
+| Security | Injection, secrets, validation | Always |
+| Correctness | Logic errors, edge cases, plan compliance | Always |
+| Consistency | File headers, imports, naming matching existing code | Yes if egregious |
+| Completeness | Test coverage, incomplete implementations | Yes if tests missing |
+| Style | Naming, dead code, complexity | No |
 
-## Priority Order (when reporting)
+## Why claude-cli?
 
-1. Security issues (always blocking)
-2. Correctness bugs (always blocking)
-3. Consistency violations (blocking if egregious, e.g., missing `declare(strict_types=1);`)
-4. Completeness issues (blocking if tests missing)
-5. Style suggestions (non-blocking)
+The Task tool spawns subagents **without extended thinking**. By using claude-cli:
+- Full extended thinking enabled
+- Fresh context = unbiased review
+- More thorough analysis
 
 ## Rules
 
-- Always spawn all 5 sub-reviewers in ONE message
-- All sub-reviewers use opus model
-- Aggregate and deduplicate findings
-- Security issues are ALWAYS critical
-- Consistency with existing code is mandatory, not optional
+- This skill is haiku (just orchestration)
+- The actual review runs as opus via claude-cli
+- Consistency with existing code is mandatory
+- Security issues are ALWAYS critical blockers

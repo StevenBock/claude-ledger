@@ -1,6 +1,6 @@
 {
   "name": "claude-ledger",
-  "version": "1.0.54",
+  "version": "1.0.55",
   "description": "Claude Code plugin with Brainstorm → Plan → Implement workflow and session continuity",
   "type": "module",
   "scripts": {

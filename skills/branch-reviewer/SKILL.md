@@ -1,11 +1,12 @@
 ---
 name: branch-reviewer
 description: Review entire branch diff for correctness, completeness, style, security, and patterns
+model: haiku
 ---
 
 # Branch Reviewer
 
-Review entire branch diff (not per-task) and return structured findings.
+Review entire branch diff via Claude CLI with extended thinking.
 
 ## When to Use
 
@@ -13,38 +14,54 @@ Review entire branch diff (not per-task) and return structured findings.
 - When you need comprehensive branch-level code review
 - After plan completion to find issues before merging
 
-## Critical Rules
-
-1. **Review the ENTIRE branch diff** - not individual tasks
-2. **Return structured findings** - categorized for retro skill to process
-3. **Spawn sub-reviewers in parallel** - for specialized concerns
-4. **Be thorough but actionable** - every finding should be fixable
-
 ## Process
 
-### Step 1: Get Branch Diff
+### Step 1: Get Branch Info
+
 ```bash
-git diff main..HEAD
 git diff --stat main..HEAD
 git log main..HEAD --oneline
 ```
 
-### Step 2: Spawn Sub-Reviewers (parallel)
-In ONE message, spawn multiple Task agents:
-- Task: "Review for correctness - logic errors, edge cases, regressions"
-- Task: "Review for completeness - missing tests, incomplete implementations"
-- Task: "Review for style - naming, formatting, patterns consistency"
-- Task: "Review for security - injection, secrets, validation"
+Capture the file list and commit count.
 
-### Step 3: Collect and Categorize Findings
+### Step 2: Invoke claude-cli for Deep Review
 
-Organize findings into categories:
-- **pattern_gaps**: PATTERNS.md insufficient or wrong
-- **planning_gaps**: Original plan missed something
-- **process_improvements**: Workflow could be better
-- **actionable_fixes**: Specific code issues to fix
+Spawn the claude-cli skill to perform comprehensive branch review with extended thinking:
 
-### Step 4: Return Structured Output
+```
+Task("claude-cli: Invoke CLI for branch review.
+task: ultrathink. Review the entire branch diff from main to HEAD.
+
+Run these commands first:
+- git diff main..HEAD (full diff)
+- git diff --stat main..HEAD (file summary)
+- git log main..HEAD --oneline (commits)
+
+Then analyze ALL changes for:
+1. Security issues (injection, secrets, validation)
+2. Correctness (logic errors, edge cases, regressions)
+3. Completeness (missing tests, incomplete implementations)
+4. Consistency (match existing codebase patterns - file headers, imports, naming)
+5. Style (naming, dead code, complexity)
+
+For consistency: Find similar existing files and compare patterns. Flag ANY deviation.
+
+Categorize findings into:
+- pattern_gaps: PATTERNS.md insufficient or wrong
+- planning_gaps: Original plan missed something
+- process_improvements: Workflow could be better
+- actionable_fixes: Specific code issues to fix
+
+system_prompt: You are reviewing an entire branch for a retrospective. Think deeply about each file changed. Be thorough - this is the last check before merge. Find similar existing files for consistency comparison.
+
+allowed_tools: Read,Glob,Grep,Bash(git*)
+model: opus")
+```
+
+### Step 3: Return Structured Findings
+
+The CLI output should follow this format for the retro skill to parse:
 
 ```markdown
 ## Branch Review: [branch-name]
@@ -63,23 +80,20 @@ Organize findings into categories:
 
 ### Actionable Fixes
 - `file:line` - [issue]: [how to fix]
-- `file:line` - [issue]: [how to fix]
 
 ### Summary
 [1-2 sentences overall assessment]
 ```
 
-## Output Format
+## Why claude-cli?
 
-Return structured findings as markdown that retro skill can parse. Each finding should have:
-- Location (file:line when applicable)
-- Description of the issue
-- Category (pattern gap, planning gap, process improvement, actionable fix)
-- Suggested resolution
+The Task tool spawns subagents **without extended thinking**. Branch review needs deep analysis across many files - extended thinking catches issues that shallow passes miss.
 
-## Never Do
+## Rules
 
-- Skip files or commits
-- Return vague findings without actionable resolution
-- Miss security issues
-- Ignore test coverage gaps
+- This skill is haiku (just orchestration)
+- Actual review runs as opus via claude-cli with thinking
+- Review ENTIRE branch diff, not individual tasks
+- Every finding must be actionable
+- Never skip files or commits
+- Security issues are always critical
