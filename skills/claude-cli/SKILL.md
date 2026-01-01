@@ -36,14 +36,31 @@ You will receive:
 
 ### Step 1: Construct CLI Command
 
-Build the command with proper escaping:
+Build the command with all optimal flags:
 
 ```bash
 claude --print --model [model] \
+  --no-session-persistence \
+  --no-chrome \
+  --max-turns 50 \
+  --fallback-model sonnet \
   --allowedTools "[allowed_tools]" \
   --append-system-prompt "[system_prompt]" \
   "[task]"
 ```
+
+### Flags Explained
+
+| Flag | Purpose |
+|------|---------|
+| `--print` | Non-interactive mode |
+| `--model opus` | Use opus for extended thinking |
+| `--no-session-persistence` | Don't save one-off review sessions |
+| `--no-chrome` | Disable browser (not needed for reviews) |
+| `--max-turns 50` | Prevent runaway (50 turns is generous) |
+| `--fallback-model sonnet` | Fall back if opus overloaded |
+| `--allowedTools` | Restrict to safe tools |
+| `--append-system-prompt` | Add instructions, keep default tooling |
 
 ### Step 2: Execute via Bash
 
@@ -51,6 +68,10 @@ Run the command and capture output:
 
 ```bash
 cd [working_dir] && claude --print --model opus \
+  --no-session-persistence \
+  --no-chrome \
+  --max-turns 50 \
+  --fallback-model sonnet \
   --allowedTools "Read,Glob,Grep,Bash(git*)" \
   --append-system-prompt "Think deeply about this task." \
   "Your task prompt here"
@@ -64,10 +85,12 @@ Return the CLI output directly. The invoking skill handles parsing.
 
 ## Example Invocations
 
+The claude-cli skill will construct the full command with all optimal flags. You just provide the task-specific parameters:
+
 ### Code Review
 ```
 Task("claude-cli: Invoke CLI for code review.
-task: Review these files for security, correctness, and consistency: [files]
+task: ultrathink. Review these files for security, correctness, and consistency: [files]
 system_prompt: You are a thorough code reviewer. Check security, correctness, completeness, consistency with existing patterns, and style. Find similar existing files to compare against.
 allowed_tools: Read,Glob,Grep,Bash(git diff*)
 model: opus")
@@ -76,7 +99,7 @@ model: opus")
 ### Complex Debugging
 ```
 Task("claude-cli: Invoke CLI for debugging.
-task: Debug why [test] is failing. Trace the code path and identify root cause.
+task: ultrathink. Debug why [test] is failing. Trace the code path and identify root cause.
 system_prompt: You are debugging a test failure. Think step by step through the code.
 allowed_tools: Read,Glob,Grep,Bash(npm test*)
 model: opus")
@@ -85,7 +108,7 @@ model: opus")
 ### Architecture Analysis
 ```
 Task("claude-cli: Invoke CLI for architecture review.
-task: Analyze the architecture of [component] and identify potential issues.
+task: ultrathink. Analyze the architecture of [component] and identify potential issues.
 system_prompt: You are a software architect reviewing code structure.
 allowed_tools: Read,Glob,Grep
 model: opus")
@@ -102,10 +125,15 @@ model: opus")
 
 ## Rules
 
+- Always include all optimal flags (see Flags Explained table)
 - Always use `--append-system-prompt` to keep default tooling
 - Always use `--print` for non-interactive mode
+- Always use `--no-session-persistence` for one-off tasks
+- Always use `--no-chrome` unless browser needed
+- Always use `--max-turns 50` to prevent runaway
+- Always use `--fallback-model sonnet` for resilience
 - Default to opus for thinking-heavy tasks
-- Set reasonable timeout for complex tasks
+- Set reasonable timeout for complex tasks (10 min default)
 - Return CLI output verbatim - let caller parse
 - This skill uses haiku since it's just orchestration
 
